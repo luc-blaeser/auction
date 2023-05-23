@@ -1,31 +1,32 @@
 import { useEffect, useState } from "react";
 import { Bid } from "./declarations/backend/backend.did";
 import { backend } from "./declarations/backend";
+import { useParams } from "react-router-dom";
 
 function AuctionDetail() {
-    const [currentBid, setCurrentBid] = useState<Bid | undefined>(undefined);
+    const { id } = useParams();
+    console.log("DETAIL ID " + id);
+
+    const auctionId = BigInt(id as string);
+
     const [bidHistory, setBidHistory] = useState<Bid[]>([]);
     const [newPrice, setNewPrice] = useState(0);
     const [lastError, setLastError] = useState<string | undefined>(undefined);
 
     const fetchFromBackend = async () => {
-        const bid = await backend.currentBid();
-        if (bid.length == 0) {
-            setCurrentBid(undefined);
-        } else {
-            setCurrentBid(bid[0]);
-        }
-        const history = await backend.getBidHistory();
+        const history = await backend.getBidHistory(auctionId);
         setBidHistory(history);
     };
 
+    const currentBid = bidHistory.length == 0 ? undefined : bidHistory[bidHistory.length - 1];
+
     useEffect(() => {
         fetchFromBackend();
-    }, []);
+    }, [auctionId]);
 
     const makeNewOffer = async () => {
         try {
-            await backend.makeBid(BigInt(newPrice));
+            await backend.makeBid(auctionId, BigInt(newPrice));
             setLastError(undefined);
         } catch (error: any) {
             const errorText: string = error.toString();

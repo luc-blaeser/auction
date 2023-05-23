@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Auction } from "./declarations/backend/backend.did";
 import { backend } from "./declarations/backend";
 
 function CreateAuction() {
@@ -8,7 +7,7 @@ function CreateAuction() {
     const [image, setImage] = useState(Uint8Array.of());
 
     const newAuction = async () => {
-        let newAuction: Auction = {
+        let newAuction = {
             title,
             description,
             image,

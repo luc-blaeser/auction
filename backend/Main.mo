@@ -4,22 +4,12 @@ import Principal "mo:base/Principal";
 import Error "mo:base/Error";
 
 actor {
-  type Auction = {
+  // TODO: Make stable
+
+  type Item = {
     title : Text;
     description : Text;
     image : Blob;
-  };
-
-  stable var currentAuction : ?Auction = null;
-
-  public func newAuction(auction : Auction) : async () {
-    Prim.debugPrint("New auction " # debug_show(auction.image.size()));
-    currentAuction := ?auction;
-  };
-
-  public func getAuction() : async ?Auction {
-    Prim.debugPrint("Get auction " # debug_show(currentAuction != null));
-    currentAuction;
   };
 
   type Bid = {
@@ -27,38 +17,49 @@ actor {
     originator : Principal.Principal;
   };
 
-  // TODO: Make stable
-  let bidHistory = Buffer.Buffer<Bid>(0);
+  type Auction = {
+    item: Item;
+    bidHistory: Buffer.Buffer<Bid>;
+  };
 
-  func lastBid() : ?Bid {
-    if (bidHistory.size() > 0) {
-      ?bidHistory.get(bidHistory.size() - 1);
+  let auctions = Buffer.Buffer<Auction>(0);
+
+  public func newAuction(item : Item) : async () {
+    let bidHistory = Buffer.Buffer<Bid>(0);
+    let newAuction = { item; bidHistory };
+    auctions.add(newAuction);
+  };
+
+  public func getItems() : async [Item] {
+    Buffer.toArray(Buffer.map<Auction, Item>(auctions, func auction = auction.item));
+  };
+
+  public func getBidHistory(auctionId: Nat) : async [Bid] {
+    Buffer.toArray(auctions.get(auctionId).bidHistory);
+  };
+
+  func lastBid(auction: Auction) : ?Bid {
+    let history = auction.bidHistory;
+    if (history.size() > 0) {
+      ?history.get(history.size() - 1);
     } else {
       null;
     };
   };
 
-  func isHigher(price : Nat) : Bool {
-    switch (lastBid()) {
+  func isHigher(auction: Auction, newPrice : Nat) : Bool {
+    switch (lastBid(auction)) {
       case null true;
-      case (?oldBid) price > oldBid.price;
+      case (?oldBid) newPrice > oldBid.price;
     };
   };
 
-  // Get the current count
-  public func getBidHistory() : async [Bid] {
-    Buffer.toArray(bidHistory);
-  };
-
-  public func currentBid() : async ?Bid {
-    lastBid();
-  };
-
-  public shared (message) func makeBid(price : Nat) {
-    if (not isHigher(price)) {
+  public shared (message) func makeBid(auctionId: Nat, price : Nat) {
+    let auction = auctions.get(auctionId);
+    if (not isHigher(auction, price)) {
       Prim.trap("Price too low");
     };
     let newBid = { price; originator = message.caller };
-    bidHistory.add(newBid);
+    auction.bidHistory.add(newBid);
   };
 };

@@ -31,7 +31,7 @@ function App() {
         <Routes>
           <Route path="/" element={<AuctionList />} />
           <Route path="/newAuction" element={<AuctionForm />} />
-          <Route path="/viewAuction" element={<AuctionDetail />} />
+          <Route path="/viewAuction/:id" element={<AuctionDetail />} />
         </Routes>
       </div>
     </BrowserRouter>
