@@ -1,19 +1,30 @@
 import { useState } from "react";
 import { backend } from "./declarations/backend";
+import { useNavigate } from "react-router-dom";
 
 function CreateAuction() {
     const [title, setTitle] = useState("Auction title");
     const [description, setDescription] = useState("");
     const [image, setImage] = useState(Uint8Array.of());
-    const [duration, setDuration] = useState(0);
+    const [duration, setDuration] = useState(60);
+    const [saving, setSaving] = useState(false);
+    const navigate = useNavigate();
 
     const newAuction = async () => {
-        let newAuction = {
-            title,
-            description,
-            image,
-        };
-        await backend.newAuction(newAuction, BigInt(duration));
+        setSaving(true);
+        try {
+            let newAuction = {
+                title,
+                description,
+                image,
+            };
+            await backend.newAuction(newAuction, BigInt(duration));
+            navigate("/");
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setSaving(false);
+        }
     }
 
     const changeFile = async (file: File | undefined) => {
@@ -54,7 +65,7 @@ function CreateAuction() {
             <input type="file" onChange={(e) => changeFile(e.target.files?.[0])} />
             <p>Duration: </p>
             <input type="text" value={duration} onChange={(e) => setDuration(parseInt(e.target.value))} />
-            <button onClick={newAuction}>
+            <button onClick={newAuction} disabled={saving}>
                 Create new auction
             </button>
         </div>

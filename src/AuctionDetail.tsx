@@ -7,6 +7,7 @@ function AuctionDetail() {
     const { id } = useParams();
     const auctionId = BigInt(id as string);
 
+    const [loading, setLoading] = useState(true);
     const [bidHistory, setBidHistory] = useState<Bid[]>([]);
     const [remainingTime, setRemainingTime] = useState(1);
     const [newPrice, setNewPrice] = useState(0);
@@ -17,10 +18,11 @@ function AuctionDetail() {
         setBidHistory(history);
         const time = await backend.getRemainingTime(auctionId);
         setRemainingTime(+time.toString());
+        setLoading(false);
     };
 
     const currentBid = bidHistory.length == 0 ? undefined : bidHistory[bidHistory.length - 1];
-    
+
     useEffect(() => {
         fetchFromBackend();
     }, [auctionId]);
@@ -56,8 +58,8 @@ function AuctionDetail() {
 
     const isClosed = remainingTime == 0;
 
-    return (
-        <>
+    const showAuction = () => {
+        return (<>
             {isClosed &&
                 <h2>Closed</h2>
             }
@@ -85,6 +87,16 @@ function AuctionDetail() {
                 <h2>History</h2>
                 <ul>{historyElements}</ul>
             </div>
+        </>);
+    }
+
+    return (
+        <>
+            {loading ?
+                <div className="card">Loading</div>
+                :
+                showAuction()
+            }
         </>
     );
 }

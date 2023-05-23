@@ -79,9 +79,6 @@ function Navigation() {
             <div className="menu-item">
                 <Link to="/newAuction">New auction</Link>
             </div>
-            <div className="menu-item">
-                <Link to="/viewAuction">Auction details</Link>
-            </div>
         </div>
     );
 }
