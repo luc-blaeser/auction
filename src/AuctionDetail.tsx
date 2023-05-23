@@ -5,21 +5,22 @@ import { useParams } from "react-router-dom";
 
 function AuctionDetail() {
     const { id } = useParams();
-    console.log("DETAIL ID " + id);
-
     const auctionId = BigInt(id as string);
 
     const [bidHistory, setBidHistory] = useState<Bid[]>([]);
+    const [remainingTime, setRemainingTime] = useState(1);
     const [newPrice, setNewPrice] = useState(0);
     const [lastError, setLastError] = useState<string | undefined>(undefined);
 
     const fetchFromBackend = async () => {
         const history = await backend.getBidHistory(auctionId);
         setBidHistory(history);
+        const time = await backend.getRemainingTime(auctionId);
+        setRemainingTime(+time.toString());
     };
 
     const currentBid = bidHistory.length == 0 ? undefined : bidHistory[bidHistory.length - 1];
-
+    
     useEffect(() => {
         fetchFromBackend();
     }, [auctionId]);
@@ -32,6 +33,8 @@ function AuctionDetail() {
             const errorText: string = error.toString();
             if (errorText.indexOf("Price too low") >= 0) {
                 setLastError("Price too low");
+            } else if (errorText.indexOf("Auction closed") >= 0) {
+                setLastError("Auction closed");
             } else {
                 setLastError(errorText);
             }
@@ -42,7 +45,7 @@ function AuctionDetail() {
 
     const historyElements = bidHistory.map(bid =>
         <li key={+bid.price.toString()}>
-            Bid {bid.price.toString()}$ by {bid.originator.toString()}
+            Bid {bid.price.toString()}$ after {bid.time.toString()} seconds by {bid.originator.toString()}
         </li>
     );
 
@@ -51,25 +54,33 @@ function AuctionDetail() {
         setNewPrice(proposedPrice);
     }
 
+    const isClosed = remainingTime == 0;
+
     return (
         <>
+            {isClosed &&
+                <h2>Closed</h2>
+            }
             {
                 currentBid != null &&
                 <div className="card">
-                    <h2>Current Bid</h2>
-                    <p>{currentBid.price.toString()}$ by {currentBid.originator.toString()}</p>
+                    <h2>{isClosed ? "Final Deal" : "Current Bid"}</h2>
+                    <p>{currentBid.price.toString()}$ after {currentBid.time.toString()} seconds by {currentBid.originator.toString()}</p>
                 </div>
             }
-            <div className="card">
-                <h2>New Bid</h2>
-                <input type="text" value={newPrice} onChange={(e) => setNewPrice(parseInt(e.target.value))} />
-                <button onClick={makeNewOffer}>
-                    Bid {newPrice}
-                </button>
-                {lastError != null &&
-                    <p>{lastError}</p>
-                }
-            </div>
+            {!isClosed &&
+                <div className="card">
+                    <h2>New Bid</h2>
+                    <h3>Remaining time: {remainingTime}</h3>
+                    <input type="text" value={newPrice} onChange={(e) => setNewPrice(parseInt(e.target.value))} />
+                    <button onClick={makeNewOffer}>
+                        Bid {newPrice}
+                    </button>
+                    {lastError != null &&
+                        <p>{lastError}</p>
+                    }
+                </div>
+            }
             <div className="card">
                 <h2>History</h2>
                 <ul>{historyElements}</ul>
