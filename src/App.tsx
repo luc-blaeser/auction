@@ -7,9 +7,10 @@ import { Principal } from "@dfinity/principal";
 import { AuthClient, ERROR_USER_INTERRUPT } from "@dfinity/auth-client";
 import { Actor, HttpAgent, Identity } from "@dfinity/agent";
 import { Bid } from './declarations/backend/backend.did';
+import AuctionForm from './AuctionForm';
+import AuctionView from './AuctionView';
 
 function App() {
-  const [count, setCount] = useState<number | undefined>();
   const [loading, setLoading] = useState(false);
   const [principal, setPrincipal] = useState<Principal | undefined>(undefined);
   const [needLogin, setNeedLogin] = useState(true);
@@ -166,6 +167,8 @@ function App() {
         <h2>History</h2>
         <ul>{historyElements}</ul>
       </div>
+      <AuctionForm/>
+      <AuctionView/>
     </div>
   );
 }
