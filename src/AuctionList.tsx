@@ -7,7 +7,6 @@ function AuctionView() {
 
     const fetchAuction = async() => {
         let result = await backend.getAuction();
-        console.log("RESULT" + result);
         if (result.length == 0) {
             setAuction(undefined);
         } else {
@@ -32,7 +31,7 @@ function AuctionView() {
 
     return (
         <div className="card">
-            <h2>View Auction</h2>
+            <h1>View Auctions</h1>
             <p>{auction?.title}</p>
             <p>{auction?.description}</p>
             <img src={getImageSource()}/>

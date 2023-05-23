@@ -71,6 +71,10 @@
   color: #888;
 }
 
-.principal {
-  color: #c0529b;
+input {
+  font-size: larger;
+}
+
+textarea {
+  font-size: larger;
 }

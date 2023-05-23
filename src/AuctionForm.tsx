@@ -13,9 +13,7 @@ function CreateAuction() {
             description,
             image,
         };
-        console.log("BEFORE UPLOAD");
         await backend.newAuction(newAuction);
-        console.log("AFTER UPLOAD");
     }
 
     const changeFile = async (file: File | undefined) => {
@@ -52,7 +50,7 @@ function CreateAuction() {
             <h1>Start New Auction</h1>
             <h2>Title</h2>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
-            <textarea rows={10} cols={200} value={description} onChange={(e) => setDescription(e.target.value)} />
+            <textarea rows={10} cols={100} value={description} onChange={(e) => setDescription(e.target.value)} />
             <input type="file" onChange={(e) => changeFile(e.target.files?.[0])} />
             <button onClick={newAuction}>
                 Create new auction
