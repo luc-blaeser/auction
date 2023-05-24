@@ -1,6 +1,6 @@
 import './AuctionDetail.css';
 import { useEffect, useState } from "react";
-import { Bid, Item } from "./declarations/backend/backend.did";
+import { AuctionStatus } from "./declarations/backend/backend.did";
 import { backend } from "./declarations/backend";
 import { useParams } from "react-router-dom";
 
@@ -8,21 +8,14 @@ function AuctionDetail() {
     const { id } = useParams();
     const auctionId = BigInt(id as string);
 
-    const [loading, setLoading] = useState(true);
-    const [bidHistory, setBidHistory] = useState<Bid[]>([]);
-    const [remainingTime, setRemainingTime] = useState(1);
+    const [auction, setAuction] = useState<AuctionStatus | undefined>();
     const [newPrice, setNewPrice] = useState(0);
     const [lastError, setLastError] = useState<string | undefined>(undefined);
 
     const fetchFromBackend = async () => {
-        const history = await backend.getBidHistory(auctionId);
-        setBidHistory(history);
-        const time = await backend.getRemainingTime(auctionId);
-        setRemainingTime(+time.toString());
-        setLoading(false);
+        const result = await backend.getAuction(auctionId);
+        setAuction(result);
     };
-
-    const currentBid = bidHistory.length == 0 ? undefined : bidHistory[bidHistory.length - 1];
 
     useEffect(() => {
         fetchFromBackend();
@@ -33,6 +26,7 @@ function AuctionDetail() {
         try {
             await backend.makeBid(auctionId, BigInt(newPrice));
             setLastError(undefined);
+            setNewPrice(newPrice + 1);
         } catch (error: any) {
             const errorText: string = error.toString();
             if (errorText.indexOf("Price too low") >= 0) {
@@ -47,7 +41,7 @@ function AuctionDetail() {
         fetchFromBackend();
     };
 
-    const historyElements = bidHistory.map(bid =>
+    const historyElements = auction?.bidHistory.map(bid =>
         <tr key={+bid.price.toString()}>
             <td>
                 {bid.price.toString()}$
@@ -61,6 +55,18 @@ function AuctionDetail() {
         </tr>
     );
 
+    const getLastBid = () => {
+        if (auction == null) {
+            return null;
+        }
+        let history = auction.bidHistory;
+        if (history.length == 0) {
+            return null;
+        }
+        return history[history.length - 1];
+    }
+
+    const currentBid = getLastBid();
     if (newPrice == 0) {
         const proposedPrice = currentBid == null ? 1 : +currentBid.price.toString() + 1;
         setNewPrice(proposedPrice);
@@ -77,7 +83,7 @@ function AuctionDetail() {
         }
     }
 
-    const isClosed = remainingTime == 0;
+    const isClosed = auction != null && +auction.remainingTime.toString() == 0;
 
     const showAuction = () => {
         return (<>
@@ -93,7 +99,7 @@ function AuctionDetail() {
             {!isClosed &&
                 <div className="section">
                     <h2>New Bid</h2>
-                    <h3>Remaining time: {remainingTime}</h3>
+                    <h3>Remaining time: {auction?.remainingTime.toString()}</h3>
                     <div className="bid-form">
                         <input type="number" value={newPrice} onChange={(e) => handleNewPriceInput(e.target.value)} />
                         <button onClick={makeNewOffer}>
@@ -125,7 +131,7 @@ function AuctionDetail() {
 
     return (
         <>
-            {loading ?
+            {auction == null ?
                 <div className="section">Loading</div>
                 :
                 showAuction()

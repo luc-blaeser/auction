@@ -1,17 +1,16 @@
 import './AuctionList.css';
 import { useEffect, useState } from "react";
-import { Item } from "./declarations/backend/backend.did";
+import { AuctionOverview, Item } from "./declarations/backend/backend.did";
 import { backend } from "./declarations/backend";
 import { Link, useNavigate } from "react-router-dom";
 
 function AuctionList() {
-    const [items, setItems] = useState<Item[] | undefined>();
+    const [list, setList] = useState<AuctionOverview[] | undefined>();
     const navigate = useNavigate();
 
-    const getImageSource = (item: Item) => {
-        const data = item.image;
-        if (data != null) {
-            const array = Uint8Array.from(data);
+    const getImageSource = (imageData: Uint8Array | number[]) => {
+        if (imageData != null) {
+            const array = Uint8Array.from(imageData);
             const blob = new Blob([array.buffer], { type: 'image/png' });
             return URL.createObjectURL(blob);
         } else {
@@ -21,13 +20,13 @@ function AuctionList() {
 
     const navigationLink = (auctionId: number) => "/viewAuction/" + auctionId;
 
-    const list = items?.map(item => {
-        const id = items?.indexOf(item);
+    const overviewList = list?.map(overview => {
+        const id = +overview.id.toString();
         return (
             <li key={id} className="gallery-item" onClick={(_) => navigate(navigationLink(id))}>
-                <div className="auction-title">{item?.title}</div>
-                <div className="auction-description">{item?.description}</div>
-                <img src={getImageSource(item)}/>
+                <div className="auction-title">{overview.item.title}</div>
+                <div className="auction-description">{overview.item.description}</div>
+                <img src={getImageSource(overview.item.image)}/>
                 <div className="gallery-item-link">
                     <Link to={navigationLink(id)}>Auction details</Link>
                 </div>
@@ -36,8 +35,8 @@ function AuctionList() {
     });
 
     const fetchAuction = async() => {
-        let result = await backend.getItems();
-        setItems(result);
+        let result = await backend.getOverviewList();
+        setList(result);
     }
 
     useEffect(() => {
@@ -46,15 +45,15 @@ function AuctionList() {
 
     return (
         <>
-        { items == null &&
-            <p>loading</p>
+        { list == null &&
+            <div className="section">Loading</div>
         }
-        { items?.length == 0 &&
-            <p>...no auctions created so far...</p>
+        { list?.length == 0 &&
+            <div className="section">No auctions created so far</div>
         }
-        { items != null && items.length > 0 &&
+        { list != null && list.length > 0 &&
             <ul className="gallery">
-                {list}
+                {overviewList}
             </ul>
         }
         </>

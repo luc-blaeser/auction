@@ -1,12 +1,10 @@
 import Prim "mo:prim";
-import Buffer "mo:base/Buffer";
 import Principal "mo:base/Principal";
-import Error "mo:base/Error";
-import Bool "mo:base/Bool";
+import RBTree "mo:base/RBTree";
+import Nat "mo:base/Nat";
+import Buffer "mo:base/Buffer";
 
 actor {
-  // TODO: Make stable
-
   type Item = {
     title : Text;
     description : Text;
@@ -19,18 +17,34 @@ actor {
     originator : Principal.Principal;
   };
 
-  type Auction = {
-    item : Item;
-    bidHistory : Buffer.Buffer<Bid>;
-    var remainingTime : Nat;
+  type AuctionId = Nat;
+
+  type AuctionOverview = {
+    id: AuctionId;
+    item: Item;
   };
 
-  let auctions = Buffer.Buffer<Auction>(0);
+  type AuctionStatus = {
+    bidHistory : [Bid];
+    remainingTime : Nat;
+  };
+
+  type Auction = {
+    overview: AuctionOverview;
+    var status: AuctionStatus;
+  };
+
+  stable var auctions: RBTree.Tree<AuctionId, Auction> = #leaf;
 
   func tick() : async () {
-    for (auction in auctions.vals()) {
-      if (auction.remainingTime > 0) {
-        auction.remainingTime -= 1;
+    for ((_, auction) in RBTree.iter(auctions, #fwd)) {
+      let oldStatus = auction.status;
+      if (oldStatus.remainingTime > 0) {
+        let newStatus = { 
+          bidHistory = oldStatus.bidHistory; 
+          remainingTime = oldStatus.remainingTime - 1 : Nat; 
+        };
+        auction.status := newStatus;
       };
     };
   };
@@ -38,26 +52,51 @@ actor {
   let second : Nat64 = 1_000_000_000;
   let timer = Prim.setTimer(second, true, tick);
 
+  var idCounter = 0;
+
+  func newAuctionId(): AuctionId {
+    let id = idCounter;
+    idCounter += 1;
+    id;
+  };
+
   public func newAuction(item : Item, duration: Nat) : async () {
-    let bidHistory = Buffer.Buffer<Bid>(0);
-    let newAuction = { item; bidHistory; var remainingTime = duration };
-    auctions.add(newAuction);
+    let id = newAuctionId();
+    let overview = { id; item; };
+    let bidHistory: [Bid] = [];
+    let status = { bidHistory; remainingTime = duration };
+    let newAuction = { overview; var status };
+    let tree = RBTree.RBTree<AuctionId, Auction>(Nat.compare);
+    tree.unshare(auctions);
+    tree.put(id, newAuction);
+    auctions := tree.share();
   };
 
-  public func getItems() : async [Item] {
-    Buffer.toArray(Buffer.map<Auction, Item>(auctions, func auction = auction.item));
+  public func getOverviewList() : async [AuctionOverview] {
+    let buffer = Buffer.Buffer<AuctionOverview>(0);
+    for ((_, auction) in RBTree.iter(auctions, #fwd)) {
+      buffer.add(auction.overview);
+    };
+    Buffer.toArray(buffer);
   };
 
-  public func getBidHistory(auctionId : Nat) : async [Bid] {
-    Buffer.toArray(auctions.get(auctionId).bidHistory);
+  func findAuction(auctionId: AuctionId): Auction {
+    let tree = RBTree.RBTree<AuctionId, Auction>(Nat.compare);
+    tree.unshare(auctions);
+    let result = tree.get(auctionId);
+    switch (result) {
+      case null Prim.trap("Inexistent id");
+      case (?auction) auction;
+    }
   };
 
-  public func getRemainingTime(auctionId : Nat) : async Nat {
-    auctions.get(auctionId).remainingTime;
+  public func getAuction(auctionId: AuctionId): async AuctionStatus {
+    let auction = findAuction(auctionId);
+    auction.status;
   };
 
   func lastBid(auction : Auction) : ?Bid {
-    let history = auction.bidHistory;
+    let history = auction.status.bidHistory;
     if (history.size() > 0) {
       ?history.get(history.size() - 1);
     } else {
@@ -72,17 +111,30 @@ actor {
     };
   };
 
+  func appendToArray<T>(array: [T], value: T): [T] {
+    Prim.Array_tabulate<T>(array.size() + 1, func (index) {
+      if (index < array.size()) {
+        array[index];
+      } else {
+        value;
+      }
+    });
+  };
+
   public shared (message) func makeBid(auctionId : Nat, price : Nat) {
     let originator = message.caller;
-    let auction = auctions.get(auctionId);
+    let auction = findAuction(auctionId);
     if (not isHigher(auction, price)) {
       Prim.trap("Price too low");
     };
-    let time = auction.remainingTime;
-    if (auction.remainingTime == 0) {
+    let oldStatus = auction.status;
+    let time = oldStatus.remainingTime;
+    if (time == 0) {
       Prim.trap("Auction closed");
     };
     let newBid = { price; time; originator };
-    auction.bidHistory.add(newBid);
+    let newHistory = appendToArray(oldStatus.bidHistory, newBid);
+    let newStatus = { bidHistory = newHistory; remainingTime = time };
+    auction.status := newStatus;
   };
 };
