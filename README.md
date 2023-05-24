@@ -2,6 +2,18 @@
 
 Small, yet hopefully realistic example case for the Motoko workshop at KTH summer school (https://cysep.conf.kth.se/).
 
+## Setup
+
+```
+npm install
+dfx start --clean --background
+dfx deploy
+npm start
+```
+
+Local frontend at `http://127.0.0.1:3000/`
+
+
 ## Use Cases
 * Open and view auctions
 * Bid within defined deadline
