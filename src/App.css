@@ -63,8 +63,9 @@
   }
 }
 
-.card {
+.section {
   padding: 2em;
+  margin: 2em;
 }
 
 input {

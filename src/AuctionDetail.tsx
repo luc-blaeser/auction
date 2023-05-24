@@ -1,5 +1,6 @@
+import './AuctionDetail.css';
 import { useEffect, useState } from "react";
-import { Bid } from "./declarations/backend/backend.did";
+import { Bid, Item } from "./declarations/backend/backend.did";
 import { backend } from "./declarations/backend";
 import { useParams } from "react-router-dom";
 
@@ -47,9 +48,17 @@ function AuctionDetail() {
     };
 
     const historyElements = bidHistory.map(bid =>
-        <li key={+bid.price.toString()}>
-            Bid {bid.price.toString()}$ after {bid.time.toString()} seconds by {bid.originator.toString()}
-        </li>
+        <tr key={+bid.price.toString()}>
+            <td>
+                {bid.price.toString()}$
+            </td>
+            <td>
+                {bid.time.toString()} seconds
+            </td>
+            <td>
+                {bid.originator.toString()}
+            </td>
+        </tr>
     );
 
     if (newPrice == 0) {
@@ -57,36 +66,59 @@ function AuctionDetail() {
         setNewPrice(proposedPrice);
     }
 
+    const handleNewPriceInput = (input: string) => {
+        try {
+            const value = parseInt(input);
+            if (value >= 0) {
+                setNewPrice(value);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     const isClosed = remainingTime == 0;
 
     const showAuction = () => {
         return (<>
-            {isClosed &&
-                <h2>Closed</h2>
-            }
             {
                 currentBid != null &&
-                <div className="card">
+                <div className="section">
                     <h2>{isClosed ? "Final Deal" : "Current Bid"}</h2>
-                    <p>{currentBid.price.toString()}$ after {currentBid.time.toString()} seconds by {currentBid.originator.toString()}</p>
+                    <p className="main-price">{currentBid.price.toString()}$</p>
+                    <p>by {currentBid.originator.toString()}</p>
+                    <p>{currentBid.time.toString()} seconds after start</p>
                 </div>
             }
             {!isClosed &&
-                <div className="card">
+                <div className="section">
                     <h2>New Bid</h2>
                     <h3>Remaining time: {remainingTime}</h3>
-                    <input type="text" value={newPrice} onChange={(e) => setNewPrice(parseInt(e.target.value))} />
-                    <button onClick={makeNewOffer}>
-                        Bid {newPrice}
-                    </button>
+                    <div className="bid-form">
+                        <input type="number" value={newPrice} onChange={(e) => handleNewPriceInput(e.target.value)} />
+                        <button onClick={makeNewOffer}>
+                            Bid {newPrice}
+                        </button>
+                    </div>
                     {lastError != null &&
-                        <p>{lastError}</p>
+                        <p className="error-message">{lastError}</p>
                     }
                 </div>
             }
-            <div className="card">
+            <div className="section">
                 <h2>History</h2>
-                <ul>{historyElements}</ul>
+                <table className='bid-table'>
+                    <thead>
+                        <tr>
+                            <th>Price</th>
+                            <th>Time after start</th>
+                            <th>Originator</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {historyElements}
+                    </tbody>
+                </table>
             </div>
         </>);
     }
@@ -94,7 +126,7 @@ function AuctionDetail() {
     return (
         <>
             {loading ?
-                <div className="card">Loading</div>
+                <div className="section">Loading</div>
                 :
                 showAuction()
             }
