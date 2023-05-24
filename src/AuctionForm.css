@@ -1,0 +1,47 @@
+.auction-form {
+    display: inline-block;
+}
+
+.auction-form-row {
+    display: block;
+    text-align: left;
+}
+
+.auction-form-footer {
+    display: block;
+    text-align: right;
+}
+
+.auction-form-label,
+.auction-form-input {
+    font-size: 1.3em;
+    display: inline-block;
+    padding: 10px;
+    vertical-align: top;
+}
+
+.auction-form-label {
+    min-width: 200px;
+}
+
+.auction-form-input textarea,
+.auction-form-input input {
+    width: 800px;
+}
+
+.auction-form-input textarea {
+    height: 200px;
+}
+
+.auction-form-button {
+    background-color: #7070ed;
+    padding: 20px;
+    display: inline-block;
+    position: relative;
+    font-size: x-large;
+    border: 1px solid black;
+    color: white;
+    border-radius: 8px;
+    font-weight: 500;
+    font-family: inherit;
+}

@@ -12,6 +12,7 @@
     border: 1px dashed black;
     border-radius: 8px;
     margin: 50px;
+    cursor: pointer;
 }
 
 .auction-title {

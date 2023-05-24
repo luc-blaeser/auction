@@ -1,3 +1,4 @@
+import './AuctionForm.css';
 import { useState } from "react";
 import { backend } from "./declarations/backend";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +7,7 @@ function CreateAuction() {
     const [title, setTitle] = useState("Auction title");
     const [description, setDescription] = useState("");
     const [image, setImage] = useState(Uint8Array.of());
-    const [duration, setDuration] = useState(60);
+    const [duration, setDuration] = useState(120);
     const [saving, setSaving] = useState(false);
     const navigate = useNavigate();
 
@@ -57,18 +58,41 @@ function CreateAuction() {
     }
 
     return (
-        <div className="card">
+        <>
             <h1>Start New Auction</h1>
-            <h2>Title</h2>
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
-            <textarea rows={10} cols={100} value={description} onChange={(e) => setDescription(e.target.value)} />
-            <input type="file" onChange={(e) => changeFile(e.target.files?.[0])} />
-            <p>Duration: </p>
-            <input type="text" value={duration} onChange={(e) => setDuration(parseInt(e.target.value))} />
-            <button onClick={newAuction} disabled={saving}>
-                Create new auction
-            </button>
-        </div>
+            <div className="auction-form" style={{ opacity: saving ? 0.5 : 1 }}>
+                <div className="auction-form-row">
+                    <div className="auction-form-label">Title: </div>
+                    <div className="auction-form-input">
+                        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+                    </div>
+                </div>
+                <div className="auction-form-row">
+                    <div className="auction-form-label">Description: </div>
+                    <div className="auction-form-input">
+                        <textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+                    </div>
+                </div>
+                <div className="auction-form-row">
+                    <div className="auction-form-label">Picture (PNG only): </div>
+                    <div className="auction-form-input">
+                        <input type="file" onChange={(e) => changeFile(e.target.files?.[0])} />
+                    </div>
+                </div>
+                <div className="auction-form-row">
+                    <div className="auction-form-label">Duration: </div>
+                    <div className="auction-form-input">
+                        <input type="range" min={60} max={600} value={duration} onChange={(e) => setDuration(parseInt(e.target.value))} />
+                        <p>{duration} seconds</p>
+                    </div>
+                </div>
+                <div className="auction-form-footer">
+                    <button className='auction-form-button' onClick={newAuction} disabled={saving}>
+                        Create new auction
+                    </button>
+                </div>
+            </div>
+        </>
     );
 }
 
