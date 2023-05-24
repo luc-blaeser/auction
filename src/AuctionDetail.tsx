@@ -12,6 +12,7 @@ function AuctionDetail() {
     const [auctionDetails, setAuctionDetails] = useState<AuctionDetails | undefined>();
     const [newPrice, setNewPrice] = useState(0);
     const [lastError, setLastError] = useState<string | undefined>(undefined);
+    const [saving, setSaving] = useState(false);
 
     const fetchFromBackend = async () => {
         const result = await backend.getAuctionDetails(auctionId);
@@ -25,9 +26,11 @@ function AuctionDetail() {
 
     const makeNewOffer = async () => {
         try {
+            setSaving(true);
             await backend.makeBid(auctionId, BigInt(newPrice));
             setLastError(undefined);
             setNewPrice(newPrice + 1);
+            fetchFromBackend();
         } catch (error: any) {
             const errorText: string = error.toString();
             if (errorText.indexOf("Price too low") >= 0) {
@@ -38,8 +41,9 @@ function AuctionDetail() {
                 setLastError(errorText);
             }
             return;
+        } finally {
+            setSaving(false);
         }
-        fetchFromBackend();
     };
 
     const historyElements = auctionDetails?.bidHistory.map(bid =>
@@ -139,7 +143,7 @@ function AuctionDetail() {
                         <h3>Remaining time: {remainingTime.toString()}</h3>
                         <div className="bid-form">
                             <input type="number" value={newPrice} onChange={(e) => handleNewPriceInput(e.target.value)} />
-                            <button onClick={makeNewOffer}>
+                            <button onClick={makeNewOffer} disabled={saving} style={{ opacity: saving ? 0.5 : 1 }}>
                                 Bid {newPrice}
                             </button>
                         </div>
