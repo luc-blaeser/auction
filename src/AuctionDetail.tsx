@@ -1,6 +1,6 @@
 import './AuctionDetail.css';
 import { useEffect, useState } from "react";
-import { Auction, Item } from "./declarations/backend/backend.did";
+import { AuctionDetails, Item } from "./declarations/backend/backend.did";
 import { backend } from "./declarations/backend";
 import { useParams } from "react-router-dom";
 import { getImageSource } from './common';
@@ -9,13 +9,13 @@ function AuctionDetail() {
     const { id } = useParams();
     const auctionId = BigInt(id as string);
 
-    const [auction, setAuction] = useState<Auction | undefined>();
+    const [auctionDetails, setAuctionDetails] = useState<AuctionDetails | undefined>();
     const [newPrice, setNewPrice] = useState(0);
     const [lastError, setLastError] = useState<string | undefined>(undefined);
 
     const fetchFromBackend = async () => {
-        const result = await backend.getAuction(auctionId);
-        setAuction(result);
+        const result = await backend.getAuctionDetails(auctionId);
+        setAuctionDetails(result);
     };
 
     useEffect(() => {
@@ -42,7 +42,7 @@ function AuctionDetail() {
         fetchFromBackend();
     };
 
-    const historyElements = auction?.status.bidHistory.map(bid =>
+    const historyElements = auctionDetails?.bidHistory.map(bid =>
         <tr key={+bid.price.toString()}>
             <td>
                 {bid.price.toString()}$
@@ -57,10 +57,10 @@ function AuctionDetail() {
     );
 
     const getLastBid = () => {
-        if (auction == null) {
+        if (auctionDetails == null) {
             return null;
         }
-        let history = auction.status.bidHistory;
+        let history = auctionDetails.bidHistory;
         if (history.length == 0) {
             return null;
         }
@@ -116,14 +116,14 @@ function AuctionDetail() {
     }
 
     const showAuction = () => {
-        if (auction == null) {
+        if (auctionDetails == null) {
             throw Error("undefined auction");
         }
-        const remainingTime = auction.status.remainingTime;
+        const remainingTime = auctionDetails.remainingTime;
         const currentBid = getLastBid();
         return (
             <>
-                {displayItem(auction.overview.item)}
+                {displayItem(auctionDetails.item)}
                 {
                     currentBid != null &&
                     <div className="section">
@@ -153,11 +153,11 @@ function AuctionDetail() {
         );
     }
 
-    const isClosed = auction != null && +auction.status.remainingTime.toString() == 0;
+    const isClosed = auctionDetails != null && +auctionDetails.remainingTime.toString() == 0;
 
     return (
         <>
-            {auction == null ?
+            {auctionDetails == null ?
                 <div className="section">Loading</div>
                 :
                 showAuction()
