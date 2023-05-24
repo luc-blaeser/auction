@@ -93,7 +93,7 @@ function AuctionDetail() {
                     <div className="overview-image"><img src={getImageSource(item.image)} /></div>
                 </div>
             </>
-            );
+        );
     }
 
     const showHistory = () => {

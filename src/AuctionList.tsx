@@ -7,7 +7,7 @@ import { getImageSource } from './common';
 
 function AuctionList() {
     const [list, setList] = useState<AuctionOverview[] | undefined>();
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const navigationLink = (auctionId: number) => "/viewAuction/" + auctionId;
 
     const overviewList = list?.map(overview => {
@@ -16,7 +16,7 @@ function AuctionList() {
             <li key={id} className="gallery-item" onClick={(_) => navigate(navigationLink(id))}>
                 <div className="auction-title">{overview.item.title}</div>
                 <div className="auction-description">{overview.item.description}</div>
-                <img src={getImageSource(overview.item.image)}/>
+                <img src={getImageSource(overview.item.image)} />
                 <div className="gallery-item-link">
                     <Link to={navigationLink(id)}>Auction details</Link>
                 </div>
@@ -24,7 +24,7 @@ function AuctionList() {
         );
     });
 
-    const fetchAuction = async() => {
+    const fetchAuction = async () => {
         let result = await backend.getOverviewList();
         setList(result);
     }
@@ -35,17 +35,17 @@ function AuctionList() {
 
     return (
         <>
-        { list == null &&
-            <div className="section">Loading</div>
-        }
-        { list?.length == 0 &&
-            <div className="section">No auctions created so far</div>
-        }
-        { list != null && list.length > 0 &&
-            <ul className="gallery">
-                {overviewList}
-            </ul>
-        }
+            {list == null &&
+                <div className="section">Loading</div>
+            }
+            {list?.length == 0 &&
+                <div className="section">No auctions created so far</div>
+            }
+            {list != null && list.length > 0 &&
+                <ul className="gallery">
+                    {overviewList}
+                </ul>
+            }
         </>
     );
 }

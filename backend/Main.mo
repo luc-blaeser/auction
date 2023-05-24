@@ -20,8 +20,8 @@ actor {
   type AuctionId = Nat;
 
   type AuctionOverview = {
-    id: AuctionId;
-    item: Item;
+    id : AuctionId;
+    item : Item;
   };
 
   type AuctionStatus = {
@@ -30,11 +30,11 @@ actor {
   };
 
   type Auction = {
-    overview: AuctionOverview;
-    status: AuctionStatus;
+    overview : AuctionOverview;
+    status : AuctionStatus;
   };
 
-  stable var auctions: RBTree.Tree<AuctionId, Auction> = #leaf;
+  stable var auctions : RBTree.Tree<AuctionId, Auction> = #leaf;
 
   func tick() : async () {
     let tree = RBTree.RBTree<AuctionId, Auction>(Nat.compare);
@@ -42,9 +42,9 @@ actor {
     for ((id, oldAuction) in tree.entries()) {
       let oldStatus = oldAuction.status;
       if (oldStatus.remainingTime > 0) {
-        let updatedStatus = { 
-          bidHistory = oldStatus.bidHistory; 
-          remainingTime = oldStatus.remainingTime - 1 : Nat; 
+        let updatedStatus = {
+          bidHistory = oldStatus.bidHistory;
+          remainingTime = oldStatus.remainingTime - 1 : Nat;
         };
         let updatedAuction = {
           overview = oldAuction.overview;
@@ -61,16 +61,16 @@ actor {
 
   var idCounter = 0;
 
-  func newAuctionId(): AuctionId {
+  func newAuctionId() : AuctionId {
     let id = idCounter;
     idCounter += 1;
     id;
   };
 
-  public func newAuction(item : Item, duration: Nat) : async () {
+  public func newAuction(item : Item, duration : Nat) : async () {
     let id = newAuctionId();
-    let overview = { id; item; };
-    let bidHistory: [Bid] = [];
+    let overview = { id; item };
+    let bidHistory : [Bid] = [];
     let status = { bidHistory; remainingTime = duration };
     let newAuction = { overview; status };
     let tree = RBTree.RBTree<AuctionId, Auction>(Nat.compare);
@@ -87,17 +87,17 @@ actor {
     Buffer.toArray(buffer);
   };
 
-  func findAuction(auctionId: AuctionId): Auction {
+  func findAuction(auctionId : AuctionId) : Auction {
     let tree = RBTree.RBTree<AuctionId, Auction>(Nat.compare);
     tree.unshare(auctions);
     let result = tree.get(auctionId);
     switch (result) {
       case null Prim.trap("Inexistent id");
       case (?auction) auction;
-    }
+    };
   };
 
-  public func getAuction(auctionId: AuctionId): async Auction {
+  public func getAuction(auctionId : AuctionId) : async Auction {
     findAuction(auctionId);
   };
 
@@ -117,14 +117,17 @@ actor {
     };
   };
 
-  func appendToArray<T>(array: [T], value: T): [T] {
-    Prim.Array_tabulate<T>(array.size() + 1, func (index) {
-      if (index < array.size()) {
-        array[index];
-      } else {
-        value;
-      }
-    });
+  func appendToArray<T>(array : [T], value : T) : [T] {
+    Prim.Array_tabulate<T>(
+      array.size() + 1,
+      func(index) {
+        if (index < array.size()) {
+          array[index];
+        } else {
+          value;
+        };
+      },
+    );
   };
 
   public shared (message) func makeBid(auctionId : Nat, price : Nat) {
@@ -141,7 +144,10 @@ actor {
     let newBid = { price; time; originator };
     let newHistory = appendToArray(oldStatus.bidHistory, newBid);
     let updatedStatus = { bidHistory = newHistory; remainingTime = time };
-    let updatedAuction = { overview = oldAuction.overview; status = updatedStatus };
+    let updatedAuction = {
+      overview = oldAuction.overview;
+      status = updatedStatus;
+    };
     let tree = RBTree.RBTree<AuctionId, Auction>(Nat.compare);
     tree.unshare(auctions);
     ignore tree.replace(auctionId, updatedAuction);

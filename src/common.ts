@@ -4,6 +4,6 @@ export function getImageSource(imageData: Uint8Array | number[]) {
         const blob = new Blob([array.buffer], { type: 'image/png' });
         return URL.createObjectURL(blob);
     } else {
-        return "";    
+        return "";
     }
 }
