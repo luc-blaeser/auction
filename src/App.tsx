@@ -27,7 +27,7 @@ function App() {
       </div>
       <h1>Motoko Auction Platform</h1>
       <Navigation/>
-      <div>
+      <div className="content">
         <Routes>
           <Route path="/" element={<AuctionList />} />
           <Route path="/newAuction" element={<AuctionForm />} />

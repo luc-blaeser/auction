@@ -1,10 +1,37 @@
 .menu {
-    padding: 2em;
+    width: 100%;
+    padding: 1px;
+    background-color: #7070ed;
+    border-radius: 8px;
 }
 
+.menu-item-button,
 .menu-item {
-    margin: 2em;
+    background-color: white;
+    padding: 20px;
+    margin: 20px;
+    display: inline-block;
+    position: relative;
     font-size: x-large;
+    border: 1px solid black;
+    color: #000;
+    border-radius: 8px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.menu-item-button {
+    cursor: pointer;
+
+    &:hover {
+        color: #646cff;
+    }
+}
+
+.menu-item a {
+    color: #000;
+    padding: 20px;
 }
 
 .principal {

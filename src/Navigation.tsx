@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
 import './Navigation.css';
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Principal } from "@dfinity/principal";
 import { AuthClient } from "@dfinity/auth-client";
@@ -58,28 +58,30 @@ function Navigation() {
     }, []);
 
     return (
-        <div className="menu">
-            <div className="card">
+        <>
+            <div className="menu">
+                <div className="menu-item">
+                    <Link to="/">List auctions</Link>
+                </div>
+                <div className="menu-item">
+                    <Link to="/newAuction">New auction</Link>
+                </div>
                 {needLogin ?
-                    <button onClick={signIn}>
+                    <div className="menu-item-button" onClick={signIn}>
                         Sign in
-                    </button>
+                    </div>
                     :
-                    <>
-                        <p className="principal">Account: {principal?.toString()}</p>
-                        <button onClick={signOut}>
-                            Sign Out
-                        </button>
-                    </>
+                    <div className="menu-item-button" onClick={signOut}>
+                        Sign Out
+                    </div>
                 }
             </div>
-            <div className="menu-item">
-                <Link to="/">List auctions</Link>
-            </div>
-            <div className="menu-item">
-                <Link to="/newAuction">New auction</Link>
-            </div>
-        </div>
+            {!needLogin &&
+                <div className="card">
+                    Logged in as: {principal?.toString()}
+                </div>
+            }
+        </>
     );
 }
 

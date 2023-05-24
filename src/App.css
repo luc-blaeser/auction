@@ -1,5 +1,5 @@
 #root {
-  max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
@@ -67,14 +67,14 @@
   padding: 2em;
 }
 
-.read-the-docs {
-  color: #888;
-}
-
 input {
   font-size: larger;
 }
 
 textarea {
   font-size: larger;
+}
+
+.content {
+  text-align: center;
 }

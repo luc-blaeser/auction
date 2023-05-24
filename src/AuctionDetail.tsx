@@ -25,6 +25,7 @@ function AuctionDetail() {
 
     useEffect(() => {
         fetchFromBackend();
+        setInterval(fetchFromBackend, 1000);
     }, [auctionId]);
 
     const makeNewOffer = async () => {

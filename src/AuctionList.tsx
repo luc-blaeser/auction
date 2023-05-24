@@ -1,9 +1,10 @@
+import './AuctionList.css';
 import { useEffect, useState } from "react";
 import { Item } from "./declarations/backend/backend.did";
 import { backend } from "./declarations/backend";
 import { Link } from "react-router-dom";
 
-function AuctionView() {
+function AuctionList() {
     const [items, setItems] = useState<Item[] | undefined>();
 
     const getImageSource = (item: Item) => {
@@ -20,11 +21,13 @@ function AuctionView() {
     const list = items?.map(item => {
         const id = items?.indexOf(item);
         return (
-            <li key={id}>
-                <p>{item?.title}</p>
-                <p>{item?.description}</p>
+            <li key={id} className="gallery-item">
+                <div className="auction-title">{item?.title}</div>
+                <div className="auction-description">{item?.description}</div>
                 <img src={getImageSource(item)}/>
-                <Link to={"/viewAuction/"+id}>Auction details</Link>
+                <div className="gallery-item-link">
+                    <Link to={"/viewAuction/"+id}>Auction details</Link>
+                </div>
             </li>
         );
     });
@@ -39,10 +42,16 @@ function AuctionView() {
     }, []);
 
     return (
-        <ul>
-            {list}
-        </ul>
+        <>
+        { items == null || items.length == 0 ?
+            <p>...no auctions created so far...</p>
+        :
+            <ul className="gallery">
+                {list}
+            </ul>
+        }
+        </>
     );
 }
 
-export default AuctionView;
+export default AuctionList;
