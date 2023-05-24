@@ -5,14 +5,18 @@ Small, yet hopefully realistic example case for the Motoko workshop at KTH summe
 ## Setup
 
 ```
-npm install
 dfx start --clean --background
-dfx deploy
+npm run setup
 npm start
 ```
 
 Local frontend at `http://127.0.0.1:3000/`
 
+## Deployment
+
+```
+dfx deploy
+```
 
 ## Use Cases
 * Open and view auctions
