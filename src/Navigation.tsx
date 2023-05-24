@@ -13,7 +13,9 @@ function Navigation() {
     const signIn = async () => {
         const authClient = await AuthClient.create();
 
-        const internetIdentityUrl = `http://localhost:4943/?canisterId=${process.env.INTERNET_IDENTITY_CANISTER_ID}`;
+        const internetIdentityUrl = import.meta.env.PROD
+            ? undefined :
+            `http://localhost:4943/?canisterId=${process.env.INTERNET_IDENTITY_CANISTER_ID}`;
 
         if (!await authClient.isAuthenticated()) {
             await new Promise((resolve) => {
@@ -36,7 +38,7 @@ function Navigation() {
         updateIdentity(identity);
         setNeedLogin(true);
     }
-
+ 
     const updateIdentity = (identity: Identity) => {
         setPrincipal(identity.getPrincipal());
         (Actor.agentOf(backend) as HttpAgent).replaceIdentity(identity);
@@ -77,7 +79,7 @@ function Navigation() {
                 }
             </div>
             {!needLogin &&
-                <div className="card">
+                <div className="principal">
                     Logged in as: {principal?.toString()}
                 </div>
             }
