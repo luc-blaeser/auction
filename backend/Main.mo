@@ -72,7 +72,7 @@ actor {
     StableList.add(auctions, newAuction);
   };
 
-  public func getOverviewList() : async [AuctionOverview] {
+  public query func getOverviewList() : async [AuctionOverview] {
     func getOverview(auction: Auction): AuctionOverview = { id = auction.id; item = auction.item };
     let overviewList = StableList.map<Auction, AuctionOverview>(auctions, getOverview);
     StableList.toArray(overviewList);
@@ -86,7 +86,7 @@ actor {
     };
   };
 
-  public func getAuctionDetails(auctionId : AuctionId) : async AuctionDetails {
+  public query func getAuctionDetails(auctionId : AuctionId) : async AuctionDetails {
     let auction = findAuction(auctionId);
     let bidHistory = StableList.toArray(auction.bidHistory);
     { item = auction.item; bidHistory; remainingTime = auction.remainingTime };
