@@ -76,7 +76,7 @@ function CreateAuction() {
                 <div className="auction-form-row">
                     <div className="auction-form-label">Picture (PNG only): </div>
                     <div className="auction-form-input">
-                        <input type="file" onChange={(e) => changeFile(e.target.files?.[0])} />
+                        <input type="file" accept='.png' onChange={(e) => changeFile(e.target.files?.[0])} />
                     </div>
                 </div>
                 <div className="auction-form-row">
