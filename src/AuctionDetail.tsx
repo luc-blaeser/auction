@@ -1,14 +1,15 @@
 import './AuctionDetail.css';
 import { useEffect, useState } from "react";
-import { AuctionStatus } from "./declarations/backend/backend.did";
+import { Auction, Item } from "./declarations/backend/backend.did";
 import { backend } from "./declarations/backend";
 import { useParams } from "react-router-dom";
+import { getImageSource } from './common';
 
 function AuctionDetail() {
     const { id } = useParams();
     const auctionId = BigInt(id as string);
 
-    const [auction, setAuction] = useState<AuctionStatus | undefined>();
+    const [auction, setAuction] = useState<Auction | undefined>();
     const [newPrice, setNewPrice] = useState(0);
     const [lastError, setLastError] = useState<string | undefined>(undefined);
 
@@ -41,7 +42,7 @@ function AuctionDetail() {
         fetchFromBackend();
     };
 
-    const historyElements = auction?.bidHistory.map(bid =>
+    const historyElements = auction?.status.bidHistory.map(bid =>
         <tr key={+bid.price.toString()}>
             <td>
                 {bid.price.toString()}$
@@ -59,15 +60,15 @@ function AuctionDetail() {
         if (auction == null) {
             return null;
         }
-        let history = auction.bidHistory;
+        let history = auction.status.bidHistory;
         if (history.length == 0) {
             return null;
         }
         return history[history.length - 1];
     }
 
-    const currentBid = getLastBid();
     if (newPrice == 0) {
+        const currentBid = getLastBid();
         const proposedPrice = currentBid == null ? 1 : +currentBid.price.toString() + 1;
         setNewPrice(proposedPrice);
     }
@@ -83,51 +84,76 @@ function AuctionDetail() {
         }
     }
 
-    const isClosed = auction != null && +auction.remainingTime.toString() == 0;
+    const displayItem = (item: Item) => {
+        return (
+            <>
+                <h1>{item.title}</h1>
+                <div className="auction-overview">
+                    <div className="overview-description">{item.description}</div>
+                    <div className="overview-image"><img src={getImageSource(item.image)} /></div>
+                </div>
+            </>
+            );
+    }
+
+    const showHistory = () => {
+        return (<div className="section">
+            <h2>History</h2>
+            <table className='bid-table'>
+                <thead>
+                    <tr>
+                        <th>Price</th>
+                        <th>Time after start</th>
+                        <th>Originator</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {historyElements}
+                </tbody>
+            </table>
+        </div>
+        );
+    }
 
     const showAuction = () => {
-        return (<>
-            {
-                currentBid != null &&
-                <div className="section">
-                    <h2>{isClosed ? "Final Deal" : "Current Bid"}</h2>
-                    <p className="main-price">{currentBid.price.toString()}$</p>
-                    <p>by {currentBid.originator.toString()}</p>
-                    <p>{currentBid.time.toString()} seconds after start</p>
-                </div>
-            }
-            {!isClosed &&
-                <div className="section">
-                    <h2>New Bid</h2>
-                    <h3>Remaining time: {auction?.remainingTime.toString()}</h3>
-                    <div className="bid-form">
-                        <input type="number" value={newPrice} onChange={(e) => handleNewPriceInput(e.target.value)} />
-                        <button onClick={makeNewOffer}>
-                            Bid {newPrice}
-                        </button>
+        if (auction == null) {
+            throw Error("undefined auction");
+        }
+        const remainingTime = auction.status.remainingTime;
+        const currentBid = getLastBid();
+        return (
+            <>
+                {displayItem(auction.overview.item)}
+                {
+                    currentBid != null &&
+                    <div className="section">
+                        <h2>{isClosed ? "Final Deal" : "Current Bid"}</h2>
+                        <p className="main-price">{currentBid.price.toString()}$</p>
+                        <p>by {currentBid.originator.toString()}</p>
+                        <p>{currentBid.time.toString()} seconds after start</p>
                     </div>
-                    {lastError != null &&
-                        <p className="error-message">{lastError}</p>
-                    }
-                </div>
-            }
-            <div className="section">
-                <h2>History</h2>
-                <table className='bid-table'>
-                    <thead>
-                        <tr>
-                            <th>Price</th>
-                            <th>Time after start</th>
-                            <th>Originator</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {historyElements}
-                    </tbody>
-                </table>
-            </div>
-        </>);
+                }
+                {!isClosed &&
+                    <div className="section">
+                        <h2>New Bid</h2>
+                        <h3>Remaining time: {remainingTime.toString()}</h3>
+                        <div className="bid-form">
+                            <input type="number" value={newPrice} onChange={(e) => handleNewPriceInput(e.target.value)} />
+                            <button onClick={makeNewOffer}>
+                                Bid {newPrice}
+                            </button>
+                        </div>
+                        {lastError != null &&
+                            <p className="error-message">{lastError}</p>
+                        }
+                    </div>
+                }
+                {showHistory()}
+            </>
+        );
     }
+
+    const isClosed = auction != null && +auction.status.remainingTime.toString() == 0;
 
     return (
         <>

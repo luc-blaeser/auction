@@ -1,3 +1,30 @@
+.auction-overview {
+    display: inline-block;
+    padding-top: 3em;
+}
+
+.overview-title {
+    font-size: 2.7em;
+    line-height: 1.1;
+    padding: 10px;
+    display: block;
+}
+
+.overview-description {
+    font-size: 1.3em;
+    padding: 10px;
+    display: block;
+}
+
+.overview-image {
+    display: block;
+    padding: 10px;
+}
+
+.overview-image img {
+    width: 250px;
+}
+
 .bid-table {
     display: inline-block;
     font-size: 1.1em;

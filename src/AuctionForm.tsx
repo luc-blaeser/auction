@@ -4,7 +4,7 @@ import { backend } from "./declarations/backend";
 import { useNavigate } from "react-router-dom";
 
 function CreateAuction() {
-    const [title, setTitle] = useState("Auction title");
+    const [title, setTitle] = useState("My Auction");
     const [description, setDescription] = useState("");
     const [image, setImage] = useState(Uint8Array.of());
     const [duration, setDuration] = useState(120);

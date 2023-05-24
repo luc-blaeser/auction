@@ -1,23 +1,13 @@
 import './AuctionList.css';
 import { useEffect, useState } from "react";
-import { AuctionOverview, Item } from "./declarations/backend/backend.did";
+import { AuctionOverview } from "./declarations/backend/backend.did";
 import { backend } from "./declarations/backend";
 import { Link, useNavigate } from "react-router-dom";
+import { getImageSource } from './common';
 
 function AuctionList() {
     const [list, setList] = useState<AuctionOverview[] | undefined>();
-    const navigate = useNavigate();
-
-    const getImageSource = (imageData: Uint8Array | number[]) => {
-        if (imageData != null) {
-            const array = Uint8Array.from(imageData);
-            const blob = new Blob([array.buffer], { type: 'image/png' });
-            return URL.createObjectURL(blob);
-        } else {
-            return "";    
-        }
-    }
-
+    const navigate = useNavigate(); 
     const navigationLink = (auctionId: number) => "/viewAuction/" + auctionId;
 
     const overviewList = list?.map(overview => {

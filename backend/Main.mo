@@ -31,22 +31,29 @@ actor {
 
   type Auction = {
     overview: AuctionOverview;
-    var status: AuctionStatus;
+    status: AuctionStatus;
   };
 
   stable var auctions: RBTree.Tree<AuctionId, Auction> = #leaf;
 
   func tick() : async () {
-    for ((_, auction) in RBTree.iter(auctions, #fwd)) {
-      let oldStatus = auction.status;
+    let tree = RBTree.RBTree<AuctionId, Auction>(Nat.compare);
+    tree.unshare(auctions);
+    for ((id, oldAuction) in tree.entries()) {
+      let oldStatus = oldAuction.status;
       if (oldStatus.remainingTime > 0) {
-        let newStatus = { 
+        let updatedStatus = { 
           bidHistory = oldStatus.bidHistory; 
           remainingTime = oldStatus.remainingTime - 1 : Nat; 
         };
-        auction.status := newStatus;
+        let updatedAuction = {
+          overview = oldAuction.overview;
+          status = updatedStatus;
+        };
+        ignore tree.replace(id, updatedAuction);
       };
     };
+    auctions := tree.share();
   };
 
   let second : Nat64 = 1_000_000_000;
@@ -65,7 +72,7 @@ actor {
     let overview = { id; item; };
     let bidHistory: [Bid] = [];
     let status = { bidHistory; remainingTime = duration };
-    let newAuction = { overview; var status };
+    let newAuction = { overview; status };
     let tree = RBTree.RBTree<AuctionId, Auction>(Nat.compare);
     tree.unshare(auctions);
     tree.put(id, newAuction);
@@ -90,9 +97,8 @@ actor {
     }
   };
 
-  public func getAuction(auctionId: AuctionId): async AuctionStatus {
-    let auction = findAuction(auctionId);
-    auction.status;
+  public func getAuction(auctionId: AuctionId): async Auction {
+    findAuction(auctionId);
   };
 
   func lastBid(auction : Auction) : ?Bid {
@@ -123,18 +129,22 @@ actor {
 
   public shared (message) func makeBid(auctionId : Nat, price : Nat) {
     let originator = message.caller;
-    let auction = findAuction(auctionId);
-    if (not isHigher(auction, price)) {
+    let oldAuction = findAuction(auctionId);
+    if (not isHigher(oldAuction, price)) {
       Prim.trap("Price too low");
     };
-    let oldStatus = auction.status;
+    let oldStatus = oldAuction.status;
     let time = oldStatus.remainingTime;
     if (time == 0) {
       Prim.trap("Auction closed");
     };
     let newBid = { price; time; originator };
     let newHistory = appendToArray(oldStatus.bidHistory, newBid);
-    let newStatus = { bidHistory = newHistory; remainingTime = time };
-    auction.status := newStatus;
+    let updatedStatus = { bidHistory = newHistory; remainingTime = time };
+    let updatedAuction = { overview = oldAuction.overview; status = updatedStatus };
+    let tree = RBTree.RBTree<AuctionId, Auction>(Nat.compare);
+    tree.unshare(auctions);
+    ignore tree.replace(auctionId, updatedAuction);
+    auctions := tree.share();
   };
 };
