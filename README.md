@@ -35,14 +35,12 @@ dfx deploy
 * Validating incoming bids.
 * Using timers for auction closing.
 * Using stable variable (ideally without upgrade hooks).
-* Assign principal to bids.
+* Assign non-anonymous principal to bid.
 
 ## Open Issues/Extensions
 * How to receive a proper `Error.reject` in the frontend. (The current version only traps.)
 * Support other image formats than PNG.
-* Do we have a data structure in the base library that can be stable and is non-functional for convenience? (The current version uses a custom `StableList`.)
 * Could use a map instead of a list for the auctions.
-* Permit bid only if signed in. How can we test whether a principal is anonymous?
 * Get rid of some JS warnings in DFX deploy (minify).
 * Deploy/test on mainnet
 * ...
