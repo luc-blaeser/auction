@@ -1,10 +1,8 @@
-import Prim "mo:prim";
 import Principal "mo:base/Principal";
 import RBTree "mo:base/RBTree";
 import Nat "mo:base/Nat";
-import Buffer "mo:base/Buffer";
-
-import List "StableList";
+import Timer "mo:base/Timer";
+import Debug "mo:base/Debug";
 import StableList "StableList";
 
 actor {
@@ -56,8 +54,7 @@ actor {
     };
   };
 
-  let second : Nat64 = 1_000_000_000;
-  let timer = Prim.setTimer(second, true, tick);
+  let timer = Timer.recurringTimer(#seconds 1, tick);
 
   func newAuctionId() : AuctionId {
     let id = idCounter;
@@ -81,7 +78,7 @@ actor {
   func findAuction(auctionId : AuctionId) : Auction {
     let result = StableList.find<Auction>(auctions, func auction = auction.id == auctionId);
     switch (result) {
-      case null Prim.trap("Inexistent id");
+      case null Debug.trap("Inexistent id");
       case (?auction) auction;
     };
   };
@@ -105,11 +102,11 @@ actor {
     let originator = message.caller;
     let auction = findAuction(auctionId);
     if (price < minimumPrice(auction)) {
-      Prim.trap("Price too low");
+      Debug.trap("Price too low");
     };
     let time = auction.remainingTime;
     if (time == 0) {
-      Prim.trap("Auction closed");
+      Debug.trap("Auction closed");
     };
     let newBid = { price; time; originator };
     StableList.add(auction.bidHistory, newBid);
