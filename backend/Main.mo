@@ -3,7 +3,7 @@ import RBTree "mo:base/RBTree";
 import Nat "mo:base/Nat";
 import Timer "mo:base/Timer";
 import Debug "mo:base/Debug";
-import StableList "StableList";
+import List "mo:base/List";
 
 actor {
   type Item = {
@@ -37,17 +37,17 @@ actor {
   };
 
   type Auction = {
-    id: AuctionId;
+    id : AuctionId;
     item : Item;
-    bidHistory : StableList.List<Bid>;
+    var bidHistory : List.List<Bid>;
     var remainingTime : Nat;
   };
 
-  stable let auctions = StableList.List<Auction>();
+  stable var auctions = List.nil<Auction>();
   stable var idCounter = 0;
 
   func tick() : async () {
-    for (auction in StableList.iterate(auctions)) {
+    for (auction in List.toIter(auctions)) {
       if (auction.remainingTime > 0) {
         auction.remainingTime -= 1;
       };
@@ -64,19 +64,22 @@ actor {
 
   public func newAuction(item : Item, duration : Nat) : async () {
     let id = newAuctionId();
-    let bidHistory = StableList.List<Bid>();
-    let newAuction = { id; item; bidHistory; var remainingTime = duration };
-    StableList.add(auctions, newAuction);
+    let bidHistory = List.nil<Bid>();
+    let newAuction = { id; item; var bidHistory; var remainingTime = duration };
+    auctions := List.push(newAuction, auctions);
   };
 
   public query func getOverviewList() : async [AuctionOverview] {
-    func getOverview(auction: Auction): AuctionOverview = { id = auction.id; item = auction.item };
-    let overviewList = StableList.map<Auction, AuctionOverview>(auctions, getOverview);
-    StableList.toArray(overviewList);
+    func getOverview(auction : Auction) : AuctionOverview = {
+      id = auction.id;
+      item = auction.item;
+    };
+    let overviewList = List.map<Auction, AuctionOverview>(auctions, getOverview);
+    List.toArray(List.reverse(overviewList));
   };
 
   func findAuction(auctionId : AuctionId) : Auction {
-    let result = StableList.find<Auction>(auctions, func auction = auction.id == auctionId);
+    let result = List.find<Auction>(auctions, func auction = auction.id == auctionId);
     switch (result) {
       case null Debug.trap("Inexistent id");
       case (?auction) auction;
@@ -85,17 +88,15 @@ actor {
 
   public query func getAuctionDetails(auctionId : AuctionId) : async AuctionDetails {
     let auction = findAuction(auctionId);
-    let bidHistory = StableList.toArray(auction.bidHistory);
+    let bidHistory = List.toArray(List.reverse(auction.bidHistory));
     { item = auction.item; bidHistory; remainingTime = auction.remainingTime };
   };
 
   func minimumPrice(auction : Auction) : Nat {
-    let history = auction.bidHistory;
-    if (StableList.isEmpty(history)) {
-      return 1;
+    switch (List.last(auction.bidHistory)) {
+      case null 1;
+      case (?lastBid) lastBid.price + 1;
     };
-    let lastBid = StableList.last(history);
-    lastBid.price + 1;
   };
 
   public shared (message) func makeBid(auctionId : Nat, price : Nat) {
@@ -109,6 +110,6 @@ actor {
       Debug.trap("Auction closed");
     };
     let newBid = { price; time; originator };
-    StableList.add(auction.bidHistory, newBid);
+    auction.bidHistory := List.push(newBid, auction.bidHistory);
   };
 };
