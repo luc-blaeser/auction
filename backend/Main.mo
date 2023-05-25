@@ -1,6 +1,4 @@
 import Principal "mo:base/Principal";
-import RBTree "mo:base/RBTree";
-import Nat "mo:base/Nat";
 import Timer "mo:base/Timer";
 import Debug "mo:base/Debug";
 import List "mo:base/List";
