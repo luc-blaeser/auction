@@ -99,6 +99,9 @@ actor {
 
   public shared (message) func makeBid(auctionId : Nat, price : Nat) {
     let originator = message.caller;
+    if (Principal.isAnonymous(originator)) {
+      Debug.trap("Anonymous caller");
+    };
     let auction = findAuction(auctionId);
     if (price < minimumPrice(auction)) {
       Debug.trap("Price too low");

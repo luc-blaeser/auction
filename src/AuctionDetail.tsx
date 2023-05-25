@@ -4,6 +4,7 @@ import { AuctionDetails, Item } from "./declarations/backend/backend.did";
 import { backend } from "./declarations/backend";
 import { useParams } from "react-router-dom";
 import { getImageSource } from './common';
+import { AuthClient } from '@dfinity/auth-client';
 
 function AuctionDetail() {
     const { id } = useParams();
@@ -13,10 +14,12 @@ function AuctionDetail() {
     const [newPrice, setNewPrice] = useState(0);
     const [lastError, setLastError] = useState<string | undefined>(undefined);
     const [saving, setSaving] = useState(false);
+    const [authenticated, setAuthenticated] = useState(false);
 
     const fetchFromBackend = async () => {
-        const result = await backend.getAuctionDetails(auctionId);
-        setAuctionDetails(result);
+        setAuctionDetails(await backend.getAuctionDetails(auctionId));
+        const authClient = await AuthClient.create();
+        setAuthenticated(await authClient.isAuthenticated());
     };
 
     useEffect(() => {
@@ -121,11 +124,31 @@ function AuctionDetail() {
         );
     }
 
+    const showBidForm = () => {
+        if (!authenticated) {
+            return (<h2 className="error-message">Need to sign in to bid</h2>);
+        }
+        return (
+            <div className="section">
+                <h2>New Bid</h2>
+                <h3>Remaining time: {auctionDetails?.remainingTime.toString()}</h3>
+                <div className="bid-form">
+                    <input type="number" value={newPrice} onChange={(e) => handleNewPriceInput(e.target.value)} />
+                    <button onClick={makeNewOffer} disabled={saving} style={{ opacity: saving ? 0.5 : 1 }}>
+                        Bid {newPrice}
+                    </button>
+                </div>
+                {lastError != null &&
+                    <p className="error-message">{lastError}</p>
+                }
+            </div>
+        );
+    }
+
     const showAuction = () => {
         if (auctionDetails == null) {
             throw Error("undefined auction");
         }
-        const remainingTime = auctionDetails.remainingTime;
         const currentBid = getLastBid();
         return (
             <>
@@ -140,19 +163,7 @@ function AuctionDetail() {
                     </div>
                 }
                 {!isClosed &&
-                    <div className="section">
-                        <h2>New Bid</h2>
-                        <h3>Remaining time: {remainingTime.toString()}</h3>
-                        <div className="bid-form">
-                            <input type="number" value={newPrice} onChange={(e) => handleNewPriceInput(e.target.value)} />
-                            <button onClick={makeNewOffer} disabled={saving} style={{ opacity: saving ? 0.5 : 1 }}>
-                                Bid {newPrice}
-                            </button>
-                        </div>
-                        {lastError != null &&
-                            <p className="error-message">{lastError}</p>
-                        }
-                    </div>
+                    showBidForm()
                 }
                 {showHistory()}
             </>
