@@ -97,7 +97,7 @@ actor {
     };
   };
 
-  public shared (message) func makeBid(auctionId : Nat, price : Nat) {
+  public shared (message) func makeBid(auctionId : Nat, price : Nat) : async () {
     let originator = message.caller;
     if (Principal.isAnonymous(originator)) {
       Debug.trap("Anonymous caller");
