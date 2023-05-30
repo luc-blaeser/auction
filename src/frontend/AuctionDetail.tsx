@@ -98,7 +98,7 @@ function AuctionDetail() {
                 <div className="auction-overview">
                     <div className="overview-description">{item.description}</div>
                     {!!item.image?.length && (
-                        <div className="overview-image"><img src={getImageSource(item.image)} /></div>
+                        <div className="overview-image"><img src={getImageSource(item.image)} alt="Auction image" /></div>
                     )}
                 </div>
             </>

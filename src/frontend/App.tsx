@@ -1,6 +1,5 @@
-import './App.css';
-import motokoLogo from './assets/motoko_moving.png';
-import motokoShadowLogo from './assets/motoko_shadow.png';
+import './App.scss';
+import motoko from './assets/motoko.png';
 import AuctionForm from './AuctionForm';
 import AuctionList from './AuctionList';
 import Navigation from './Navigation';
@@ -11,22 +10,10 @@ function App() {
   return (
     <BrowserRouter>
       <div>
-        <a
-          href="https://internetcomputer.org/docs/current/developer-docs/build/cdks/motoko-dfinity/motoko/"
-          target="_blank"
-        >
-          <span className="logo-stack">
-            <img
-              src={motokoShadowLogo}
-              className="logo motoko-shadow"
-              alt="Motoko logo"
-            />
-            <img src={motokoLogo} className="logo motoko" alt="Motoko logo" />
-          </span>
-        </a>
+        <img src={motoko} className="logo" alt="Motoko logo" />
       </div>
       <h1>Motoko Auction Platform</h1>
-      <Navigation/>
+      <Navigation />
       <div className="content">
         <Routes>
           <Route path="/" element={<AuctionList />} />

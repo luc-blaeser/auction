@@ -38,7 +38,7 @@ function Navigation() {
         updateIdentity(identity);
         setNeedLogin(true);
     }
- 
+
     const updateIdentity = (identity: Identity) => {
         setPrincipal(identity.getPrincipal());
         (Actor.agentOf(backend) as HttpAgent).replaceIdentity(identity);

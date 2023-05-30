@@ -16,7 +16,7 @@ function AuctionList() {
             <li key={id} className="gallery-item" onClick={(_) => navigate(navigationLink(id))}>
                 <div className="auction-title">{overview.item.title}</div>
                 <div className="auction-description">{overview.item.description}</div>
-                {!!overview.item.image?.length && <img src={getImageSource(overview.item.image)} />}
+                {!!overview.item.image?.length && <img src={getImageSource(overview.item.image)} alt="Auction image" />}
                 <div className="gallery-item-link">
                     <Link to={navigationLink(id)}>Auction details</Link>
                 </div>
