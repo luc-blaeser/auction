@@ -39,17 +39,6 @@ actor {
     item : Item;
   };
 
-  /// Bid information of auction. Shared type.
-  type AuctionStatus = {
-    /// Series of valid bids in this auction, sorted by price.
-    bidHistory : [Bid];
-    /// Remaining time until the end of the auction.
-    /// `0` means that the auction is closed.
-    /// The last entry in `bidHistory`, if existing, denotes
-    /// the auction winner.
-    remainingTime : Nat;
-  };
-
   /// Detailed information of an auction. Shared type.
   type AuctionDetails = {
     /// Item sold in the auction.
@@ -153,7 +142,7 @@ actor {
   /// * The auction is still open (not finished).
   /// If valid, the bid is appended to the bid history.
   /// Otherwise, traps with an error.
-  public shared (message) func makeBid(auctionId : Nat, price : Nat) : async () {
+  public shared (message) func makeBid(auctionId : AuctionId, price : Nat) : async () {
     let originator = message.caller;
     if (Principal.isAnonymous(originator)) {
       Debug.trap("Anonymous caller");
