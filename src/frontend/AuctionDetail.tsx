@@ -135,7 +135,7 @@ function AuctionDetail() {
                 <div className="bid-form">
                     <input type="number" value={newPrice} onChange={(e) => handleNewPriceInput(e.target.value)} />
                     <button onClick={makeNewOffer} disabled={saving} style={{ opacity: saving ? 0.5 : 1 }}>
-                        Bid {newPrice}
+                        Bid {newPrice} ICP
                     </button>
                 </div>
                 {lastError != null &&
