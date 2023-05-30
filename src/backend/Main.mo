@@ -39,7 +39,7 @@ actor {
     item : Item;
   };
 
-  /// Bid infomation of auction. Shared type.
+  /// Bid information of auction. Shared type.
   type AuctionStatus = {
     /// Series of valid bids in this auction, sorted by price.
     bidHistory : [Bid];
@@ -108,7 +108,7 @@ actor {
   };
 
   /// Retrieve all auctions (open and closed) with their ids and reduced overview information.
-  /// Specific auctions can be separatedly retrieved by `getAuctionDetail`.
+  /// Specific auctions can be separately retrieved by `getAuctionDetail`.
   public func getOverviewList() : async [AuctionOverview] {
     func getOverview(auction : Auction) : AuctionOverview = {
       id = auction.id;
@@ -137,7 +137,7 @@ actor {
     { item = auction.item; bidHistory; remainingTime = auction.remainingTime };
   };
 
-  /// Internal helper function to retrieve the mininum price for the next bid in an auction.
+  /// Internal helper function to retrieve the minimum price for the next bid in an auction.
   /// The minimum price is one unit of the currency larger than the last bid.
   func minimumPrice(auction : Auction) : Nat {
     switch (List.last(auction.bidHistory)) {
