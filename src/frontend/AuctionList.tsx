@@ -1,7 +1,7 @@
 import './AuctionList.css';
 import { useEffect, useState } from "react";
-import { AuctionOverview } from "./declarations/backend/backend.did";
-import { backend } from "./declarations/backend";
+import { AuctionOverview } from "../declarations/backend/backend.did";
+import { backend } from "../declarations/backend";
 import { Link, useNavigate } from "react-router-dom";
 import { getImageSource } from './common';
 

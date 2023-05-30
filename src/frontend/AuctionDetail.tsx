@@ -1,7 +1,7 @@
 import './AuctionDetail.css';
 import { useEffect, useState } from "react";
-import { AuctionDetails, Item } from "./declarations/backend/backend.did";
-import { backend } from "./declarations/backend";
+import { AuctionDetails, Item } from "../declarations/backend/backend.did";
+import { backend } from "../declarations/backend";
 import { useParams } from "react-router-dom";
 import { getImageSource } from './common';
 import { AuthClient } from '@dfinity/auth-client';

@@ -9,7 +9,7 @@
     "frontend": "vite --port 3000",
     "backend": "mo-dev --generate --deploy -y",
     "build": "tsc && vite build",
-    "format": "prettier --write \"src/**/*.{json,js,jsx,ts,tsx,css,scss}\" \"backend/**/*.mo\""
+    "format": "prettier --write \"src/**/*.{json,js,jsx,ts,tsx,css,scss}\" \"src/backend/**/*.mo\""
   },
   "dependencies": {
     "react": "^18.2.0",

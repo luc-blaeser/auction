@@ -31,15 +31,15 @@ Local frontend: `http://127.0.0.1:3000/`
 # Code Structure
 
 The code template contains three canisters, as defined `dfx.json`:
-* Motoko backend: `backend/` <-- **Focus of this workshop.**
-* Web frontend: `frontend/` (already pre-implemented, using React and Typescript)
+* Motoko backend: `src/backend/` <-- **Focus of this workshop.**
+* Web frontend: `src/frontend/` (already pre-implemented, using React and Typescript)
 * Internet Identity: Used for authentication. The binary is downloaded during local development.
 
 # Workshop Goals
 
 You can focus on the backend development with Motoko: 
 
-`backend/AuctionServer.mo`
+`src/backend/AuctionServer.mo`
 
 Functionality to add:
 * Storing and retrieving the auction data in the actor. Prefer `stable` variable(s).

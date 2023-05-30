@@ -1,6 +1,6 @@
 import './AuctionForm.css';
 import { useState } from "react";
-import { backend } from "./declarations/backend";
+import { backend } from "../declarations/backend";
 import { useNavigate } from "react-router-dom";
 
 function CreateAuction() {
