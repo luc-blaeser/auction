@@ -25,7 +25,7 @@ Local frontend: `http://127.0.0.1:3000/`
 
 You can focus on the backend development with Motoko: 
 
-`src/backend/Main.mo`
+`src/backend/AuctionServer.mo`
 
 Functionality to add:
 * Storing and retrieving the auction data in the actor. Prefer `stable` variable(s).
