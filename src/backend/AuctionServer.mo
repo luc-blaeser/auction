@@ -52,87 +52,25 @@ actor {
     remainingTime : Nat;
   };
 
-  /// Internal, non-shared but stable type, storing all information
-  /// about an auction. Using a separate type than `AuctionDetail`
-  /// to enable simpler and faster extension of the bid history
-  /// by means of a `List`.
-  type Auction = {
-    id : AuctionId;
-    item : Item;
-    var bidHistory : List.List<Bid>;
-    var remainingTime : Nat;
-  };
-
-  /// Stable list of all auctions.
-  stable var auctions = List.nil<Auction>();
-  /// Counter for generating new auction ids.
-  stable var idCounter = 0;
-
-  /// Timer event occurring every second, decreasing the remaining
-  /// time of each active (unfinished) auction.
-  func tick() : async () {
-    for (auction in List.toIter(auctions)) {
-      if (auction.remainingTime > 0) {
-        auction.remainingTime -= 1;
-      };
-    };
-  };
-
-  /// Installing a timer (non-stable), will be reinstalled on canister upgrade.
-  let timer = Timer.recurringTimer(#seconds 1, tick);
-
-  /// Internal function for generating a new auction id by using the `idCounter`.
-  func newAuctionId() : AuctionId {
-    let id = idCounter;
-    idCounter += 1;
-    id;
-  };
-
   /// Register a new auction that is open for the defined duration.
   public func newAuction(item : Item, duration : Nat) : async () {
-    let id = newAuctionId();
-    let bidHistory = List.nil<Bid>();
-    let newAuction = { id; item; var bidHistory; var remainingTime = duration };
-    auctions := List.push(newAuction, auctions);
+    // TODO: Implementation
+    Debug.trap("not yet implemented");
   };
 
   /// Retrieve all auctions (open and closed) with their ids and reduced overview information.
   /// Specific auctions can be separately retrieved by `getAuctionDetail`.
   public func getOverviewList() : async [AuctionOverview] {
-    func getOverview(auction : Auction) : AuctionOverview = {
-      id = auction.id;
-      item = auction.item;
-    };
-    let overviewList = List.map<Auction, AuctionOverview>(auctions, getOverview);
-    List.toArray(List.reverse(overviewList));
-  };
-
-  /// Internal helper function for retrieving an auction by its id.
-  /// Traps if the id is inexistent.
-  func findAuction(auctionId : AuctionId) : Auction {
-    let result = List.find<Auction>(auctions, func auction = auction.id == auctionId);
-    switch (result) {
-      case null Debug.trap("Inexistent id");
-      case (?auction) auction;
-    };
+    // TODO: Implementation
+    [];
   };
 
   /// Retrieve the detail information of auction by its id.
   /// The returned detail contain status about whether the auction is active or closed,
   /// and the bids make so far.
   public func getAuctionDetails(auctionId : AuctionId) : async AuctionDetails {
-    let auction = findAuction(auctionId);
-    let bidHistory = List.toArray(List.reverse(auction.bidHistory));
-    { item = auction.item; bidHistory; remainingTime = auction.remainingTime };
-  };
-
-  /// Internal helper function to retrieve the minimum price for the next bid in an auction.
-  /// The minimum price is one unit of the currency larger than the last bid.
-  func minimumPrice(auction : Auction) : Nat {
-    switch (List.last(auction.bidHistory)) {
-      case null 1;
-      case (?lastBid) lastBid.price + 1;
-    };
+    // TODO: Implementation
+    Debug.trap("not yet implemented");
   };
 
   /// Make a new bid for a specific auction specified by the id.
@@ -143,19 +81,7 @@ actor {
   /// If valid, the bid is appended to the bid history.
   /// Otherwise, traps with an error.
   public shared (message) func makeBid(auctionId : AuctionId, price : Nat) : async () {
-    let originator = message.caller;
-    if (Principal.isAnonymous(originator)) {
-      Debug.trap("Anonymous caller");
-    };
-    let auction = findAuction(auctionId);
-    if (price < minimumPrice(auction)) {
-      Debug.trap("Price too low");
-    };
-    let time = auction.remainingTime;
-    if (time == 0) {
-      Debug.trap("Auction closed");
-    };
-    let newBid = { price; time; originator };
-    auction.bidHistory := List.push(newBid, auction.bidHistory);
+    // TODO: Implementation
+    Debug.trap("not yet implemented");
   };
 };
