@@ -98,7 +98,7 @@ actor {
 
   /// Retrieve all auctions (open and closed) with their ids and reduced overview information.
   /// Specific auctions can be separately retrieved by `getAuctionDetail`.
-  public func getOverviewList() : async [AuctionOverview] {
+  public query func getOverviewList() : async [AuctionOverview] {
     func getOverview(auction : Auction) : AuctionOverview = {
       id = auction.id;
       item = auction.item;
@@ -120,7 +120,7 @@ actor {
   /// Retrieve the detail information of auction by its id.
   /// The returned detail contain status about whether the auction is active or closed,
   /// and the bids make so far.
-  public func getAuctionDetails(auctionId : AuctionId) : async AuctionDetails {
+  public query func getAuctionDetails(auctionId : AuctionId) : async AuctionDetails {
     let auction = findAuction(auctionId);
     let bidHistory = List.toArray(List.reverse(auction.bidHistory));
     { item = auction.item; bidHistory; remainingTime = auction.remainingTime };
