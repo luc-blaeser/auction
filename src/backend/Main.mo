@@ -17,7 +17,7 @@ actor {
 
   /// Auction bid. Shared type.
   type Bid = {
-    /// Price in the unit of the currency (e.g. ICP).
+    /// Price in the unit of the currency (ICP).
     price : Nat;
     /// Point in time of the bid, measured as the
     /// remaining until the closing of the auction.

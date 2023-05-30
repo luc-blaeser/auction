@@ -52,7 +52,7 @@ function AuctionDetail() {
     const historyElements = auctionDetails?.bidHistory.map(bid =>
         <tr key={+bid.price.toString()}>
             <td>
-                {bid.price.toString()}$
+                {bid.price.toString()} ICP
             </td>
             <td>
                 {bid.time.toString()} seconds
@@ -157,7 +157,7 @@ function AuctionDetail() {
                     currentBid != null &&
                     <div className="section">
                         <h2>{isClosed ? "Final Deal" : "Current Bid"}</h2>
-                        <p className="main-price">{currentBid.price.toString()}$</p>
+                        <p className="main-price">{currentBid.price.toString()} ICP</p>
                         <p>by {currentBid.originator.toString()}</p>
                         <p>{currentBid.time.toString()} seconds after start</p>
                     </div>
