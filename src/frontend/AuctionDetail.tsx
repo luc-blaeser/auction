@@ -1,4 +1,4 @@
-import './AuctionDetail.css';
+import './AuctionDetail.scss';
 import { useEffect, useState } from "react";
 import { AuctionDetails, Item } from "../declarations/backend/backend.did";
 import { backend } from "../declarations/backend";

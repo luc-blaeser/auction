@@ -1,4 +1,4 @@
-import './AuctionForm.css';
+import './AuctionForm.scss';
 import { useState } from "react";
 import { backend } from "../declarations/backend";
 import { useNavigate } from "react-router-dom";
