@@ -19,7 +19,7 @@ npm run setup
 npm start
 ```
 
-Local frontend: `http://127.0.0.1:3000/`
+Local frontend: http://127.0.0.1:3000/
 
 ## Workshop Goals
 
@@ -45,3 +45,7 @@ Particular checks needed for a bid:
 
 * [Motoko Language](https://internetcomputer.org/docs/current/motoko/main/motoko)
 * [Motoko Base Library](https://internetcomputer.org/docs/current/motoko/main/base)
+
+# Workshop Solution
+
+* An example solution with a complete Motoko backend implementation is available in the [Git branch `solution`](https://github.com/luc-blaeser/auction/tree/solution).
