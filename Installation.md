@@ -10,10 +10,12 @@ wsl --install
 
 [More detailed WSL 2 instructions](https://learn.microsoft.com/en-us/windows/wsl/install)
 
-2. Install **Node.js**: 
+2. Install **Node.js** in WSL: 
 
-(***tbd***: special installation under WSL needed)
-
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
+nvm install node
+```
 
 3. Install **dfx** (Internet Computer SDK): 
 
@@ -24,7 +26,14 @@ sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 ## On Linux/MacOS
 1. Install **Node.js**:
 
-(***tbd***: different installations depending on OS distributor)
+Under **Ubuntu**: 
+```
+sudo apt install npm
+```
+
+Under **MacOS**: 
+
+Install package from node.js webpage: https://nodejs.org/en/download
 
 2. Install **dfx** (Internet Computer SDK): 
 
@@ -51,7 +60,7 @@ npm run setup
 npm start
 ```
 
-A local web frontend runs at: `http://127.0.0.1:3000/`
+A local web frontend runs at: http://127.0.0.1:3000/
 
 # Web Browser
 
