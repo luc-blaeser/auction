@@ -10,21 +10,21 @@ function Navigation() {
     const [principal, setPrincipal] = useState<Principal | undefined>(undefined);
     const [needLogin, setNeedLogin] = useState(true);
 
+    const authClientPromise = AuthClient.create();
+
     const signIn = async () => {
-        const authClient = await AuthClient.create();
+        const authClient = await authClientPromise;
 
         const internetIdentityUrl = import.meta.env.PROD
             ? undefined :
             `http://localhost:4943/?canisterId=${process.env.INTERNET_IDENTITY_CANISTER_ID}`;
 
-        if (!await authClient.isAuthenticated()) {
             await new Promise((resolve) => {
                 authClient.login({
                     identityProvider: internetIdentityUrl,
                     onSuccess: () => resolve(undefined),
                 });
             });
-        }
 
         const identity = authClient.getIdentity();
         updateIdentity(identity);
@@ -32,7 +32,7 @@ function Navigation() {
     };
 
     const signOut = async () => {
-        const authClient = await AuthClient.create();
+        const authClient = await authClientPromise;
         await authClient.logout();
         const identity = authClient.getIdentity();
         updateIdentity(identity);
