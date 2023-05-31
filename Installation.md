@@ -68,6 +68,3 @@ The following browser configuration is recommended:
 * **Chrome** browser. (Currently, Firefox has some issues with Internet Identity login.)
 * Disable the **popup blocker** for the local frontend URL during development.
 
-# Workshop Solution
-
-* A example solution with a complete Motoko backend implementation is available in the Git branch `solution`.
