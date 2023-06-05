@@ -43,6 +43,7 @@ Particular checks needed for a bid:
 
 ## Documentation
 
+* [Motoko Tutorial Slides](Motoko_Tutorial.pdf)
 * [Motoko Language](https://internetcomputer.org/docs/current/motoko/main/motoko)
 * [Motoko Base Library](https://internetcomputer.org/docs/current/motoko/main/base)
 
