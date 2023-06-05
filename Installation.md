@@ -1,4 +1,4 @@
-# Installation
+# Installation of the Internet Computer SDK
 
 ## On Windows
 1. Install **Windows Subsystem for Linux**:
@@ -7,8 +7,6 @@ Run in the command line processor with administrator rights:
 ```
 wsl --install
 ```
-
-[More detailed WSL 2 instructions](https://learn.microsoft.com/en-us/windows/wsl/install)
 
 2. Install **Node.js** in WSL: 
 
@@ -41,19 +39,32 @@ Install package from node.js webpage: https://nodejs.org/en/download
 sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 ```
 
-## More Details
-
-[IC Installation Instructions](https://internetcomputer.org/docs/current/developer-docs/setup/install)
-
 # Development Environment
-* Clone or download the Git repository for local development.
-* **Visual Studio Code** with the **Motoko plugin** (by DFINITY Foundation) offers a convenient development environment.
-* Internet connection is needed for local testing and development.
 
-# Running the Application
+We recommend **Visual Studio Code**, but you can also use any other IDE, if you prefer.
 
-For local testing and development:
+1. Install **Visual Studio Code**.
 
+https://code.visualstudio.com/
+
+2. Install the **Motoko plugin** (by DFINITY Foundation) in Visual Studio Code.
+
+Menu: View -> Extensions:
+Search for "Motoko" (Motoko language support by DFINITY Foundation) and install this plugin.
+
+3. Clone or download the Git repository for local development:
+
+```
+git clone https://github.com/luc-blaeser/auction.git
+```
+
+Or, alternatively if you do not have GIT installed, you can download the repository as a zip-file from: https://github.com/luc-blaeser/auction
+
+# Testing the installation
+
+You can run DFX and the application locally:
+
+In the folder `auction` (of the local repository folder):
 ```
 dfx start --clean --background
 npm run setup
@@ -62,9 +73,9 @@ npm start
 
 A local web frontend runs at: http://127.0.0.1:3000/
 
-# Web Browser
+The application is not yet fully functional as the backend is not yet implemented. This is the focus of the workshop.
 
-The following browser configuration is recommended:
-* **Chrome** browser. (Currently, Firefox has some issues with Internet Identity login.)
-* Disable the **popup blocker** for the local frontend URL during development.
+### Further Information
 
+[IC Installation Instructions](https://internetcomputer.org/docs/current/developer-docs/setup/install)
+[More detailed WSL 2 instructions](https://learn.microsoft.com/en-us/windows/wsl/install)
