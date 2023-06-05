@@ -77,5 +77,5 @@ The application is not yet fully functional as the backend is not yet implemente
 
 ### Further Information
 
-[IC Installation Instructions](https://internetcomputer.org/docs/current/developer-docs/setup/install)
-[More detailed WSL 2 instructions](https://learn.microsoft.com/en-us/windows/wsl/install)
+* [IC Installation Instructions](https://internetcomputer.org/docs/current/developer-docs/setup/install)
+* [More detailed WSL 2 instructions](https://learn.microsoft.com/en-us/windows/wsl/install)
