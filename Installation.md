@@ -52,7 +52,7 @@ https://code.visualstudio.com/
 Menu: View -> Extensions:
 Search for "Motoko" (Motoko language support by DFINITY Foundation) and install this plugin.
 
-3. Clone or download the Git repository for local development:
+3. Clone the Git repository for local development:
 
 ```
 git clone https://github.com/luc-blaeser/auction.git
@@ -62,7 +62,7 @@ Or, alternatively if you do not have GIT installed, you can download the reposit
 
 # Testing the installation
 
-You can run DFX and the application locally:
+You can run **dfx** and the application locally:
 
 In the folder `auction` (of the local repository folder):
 ```
@@ -74,6 +74,11 @@ npm start
 A local web frontend runs at: http://127.0.0.1:3000/
 
 The application is not yet fully functional as the backend is not yet implemented. This is the focus of the workshop.
+
+After testing, you can again stop **dfx**:
+```
+dfx stop
+```
 
 ### Further Information
 
