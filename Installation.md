@@ -8,7 +8,7 @@ Run in the command line processor with administrator rights:
 wsl --install
 ```
 
-2. Install **Node.js** in WSL: 
+2. Install **node.js** in WSL: 
 
 ```
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh | bash
@@ -22,7 +22,7 @@ sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 ```
 
 ## On Linux/MacOS
-1. Install **Node.js**:
+1. Install **node.js**:
 
 Under **Ubuntu**: 
 ```
@@ -31,7 +31,7 @@ sudo apt install npm
 
 Under **MacOS**: 
 
-Install package from node.js webpage: https://nodejs.org/en/download
+Install package from the `node.js` webpage: https://nodejs.org/en/download
 
 2. Install **dfx** (Internet Computer SDK): 
 
@@ -58,11 +58,11 @@ Search for "Motoko" (Motoko language support by DFINITY Foundation) and install 
 git clone https://github.com/luc-blaeser/auction.git
 ```
 
-Or, alternatively if you do not have GIT installed, you can download the repository as a zip-file from: https://github.com/luc-blaeser/auction
+Or, alternatively if you do not have Git installed, you can download the repository as a zip-file from: https://github.com/luc-blaeser/auction
 
 # Testing the Installation
 
-You can run **dfx** and the application locally:
+You can run the application locally with **dfx**:
 
 In the folder `auction` (of the local repository folder):
 ```
@@ -75,7 +75,7 @@ A local web frontend runs at: http://127.0.0.1:3000/
 
 The application is not yet fully functional as the backend is not yet implemented. This is the focus of the workshop.
 
-After testing, you can again stop **dfx**:
+After testing, you can terminate the **npm** process and then stop **dfx**:
 ```
 dfx stop
 ```
