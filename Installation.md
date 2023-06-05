@@ -60,7 +60,7 @@ git clone https://github.com/luc-blaeser/auction.git
 
 Or, alternatively if you do not have GIT installed, you can download the repository as a zip-file from: https://github.com/luc-blaeser/auction
 
-# Testing the installation
+# Testing the Installation
 
 You can run **dfx** and the application locally:
 
