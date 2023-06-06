@@ -52,6 +52,8 @@ https://code.visualstudio.com/
 Menu: View -> Extensions:
 Search for "Motoko" (Motoko language support by DFINITY Foundation) and install this plugin.
 
+![image](https://github.com/luc-blaeser/auction/assets/112870813/742d8cf8-f45b-4104-a6d7-455fa9d4a8a4)
+
 3. Clone the Git repository for local development:
 
 ```
