@@ -19,7 +19,7 @@ npm run setup
 npm start
 ```
 
-Local frontend: http://127.0.0.1:3000/
+Local frontend: http://localhost:3000/
 
 ## Workshop Goals
 
