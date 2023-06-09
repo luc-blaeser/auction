@@ -73,7 +73,7 @@ npm run setup
 npm start
 ```
 
-A local web frontend runs at: http://127.0.0.1:3000/
+A local web frontend runs at: http://localhost:3000/
 
 The application is not yet fully functional as the backend is not yet implemented. This is the focus of the workshop.
 

@@ -1,5 +1,4 @@
 {
-    "dfx": "0.14.0",
     "canisters": {
         "backend": {
             "type": "motoko",
