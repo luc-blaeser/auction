@@ -129,9 +129,9 @@ actor {
   /// Internal helper function to retrieve the minimum price for the next bid in an auction.
   /// The minimum price is one unit of the currency larger than the last bid.
   func minimumPrice(auction : Auction) : Nat {
-    switch (List.last(auction.bidHistory)) {
+    switch (auction.bidHistory) {
       case null 1;
-      case (?lastBid) lastBid.price + 1;
+      case (?(lastBid, _)) lastBid.price + 1;
     };
   };
 
