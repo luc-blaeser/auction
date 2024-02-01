@@ -79,7 +79,7 @@ actor {
   };
 
   /// Installing a timer (non-stable), will be reinstalled on canister upgrade.
-  let timer = Timer.recurringTimer(#seconds 1, tick);
+  let _timer = Timer.recurringTimer(#seconds 1, tick);
 
   /// Internal function for generating a new auction id by using the `idCounter`.
   func newAuctionId() : AuctionId {
