@@ -31,7 +31,7 @@ export const AuctionDetails = Record({
 
 export type AuctionDetails = typeof AuctionDetails.tsType;
 
-export default Canister({
+export const backend = Canister({
 
     // Retrieve the detail information of auction by its id.
     // The returned detail contain status about whether the auction is active or closed,
