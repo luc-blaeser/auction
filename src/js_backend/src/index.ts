@@ -43,14 +43,12 @@ let idCounter: bigint = 0n;
 
 
 function tick() {
-  
     for (let auction of auctions) {
         if (auction.remainingTime > 0n) {
             auction.remainingTime -= 1n;
         }
     }
-
-   ic.print("tick") //TBD
+   // ic.print("tick")
 }
 
 
@@ -86,6 +84,7 @@ export default Canister({
     // The returned detail contain status about whether the auction is active or closed,
     // and the bids make so far.
     getAuctionDetails: update([nat], AuctionDetails, (auctionId) => {
+      ic.print("getAuctionDetails");
       let result = auctions.find(auction => auction.id === auctionId);
       if (!result) {
           ic.trap("Inexistent id");
@@ -96,6 +95,7 @@ export default Canister({
     // Retrieve all auctions (open and closed) with their ids and reduced overview information.
     // Specific auctions can be separately retrieved by `getAuctionDetail`.
     getOverviewList: update([], Vec(AuctionOverview), () => {
+      ic.print("getOverviewList");
       function getOverview(auction: Auction): AuctionOverview {
           return { id: auction.id, item: auction.item };
       }
@@ -111,6 +111,7 @@ export default Canister({
     // If valid, the bid is appended to the bid history.
     // Otherwise, traps with an error.
     makeBid: update([nat/*AuctionId*/, nat], Void, (auctionId, price) => {
+      ic.print("makeBid");
       let originator = ic.caller();
       /* RESTORE ME: Temporarilly disabled due to lack of II credentials
       if (originator.isAnonymous()) {
@@ -131,6 +132,7 @@ export default Canister({
 
     // Register a new auction that is open for the defined duration.
     newAuction: update([Item, nat], Void, (item, duration) => {
+     ic.print("newAuction");
      let id = newAuctionId();
      let bidHistory: Bid[] = [];
      let newAuction: Auction = { id, item, bidHistory, remainingTime: duration };
