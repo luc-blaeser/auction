@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { Principal } from "@dfinity/principal";
 import { AuthClient } from "@dfinity/auth-client";
 import { Actor, HttpAgent, Identity } from "@dfinity/agent";
-import { backend } from "../declarations/backend";
+import { canisterId, createActor } from "../declarations/backend";
+
+const backend = createActor(canisterId);
 
 function Navigation() {
     const [principal, setPrincipal] = useState<Principal | undefined>(undefined);

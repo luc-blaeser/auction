@@ -1,7 +1,9 @@
 import './AuctionForm.scss';
 import { useState } from "react";
-import { backend } from "../declarations/backend/index.js";
+import { canisterId, createActor } from "../declarations/backend";
 import { useNavigate } from "react-router-dom";
+
+const backend = createActor(canisterId);
 
 function CreateAuction() {
     const [title, setTitle] = useState("My Auction");
