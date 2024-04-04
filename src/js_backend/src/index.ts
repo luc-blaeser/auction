@@ -1,4 +1,4 @@
-import { Canister, Record, Variant, Vec, Void, Principal, query, update, text, blob, nat } from 'azle';
+import { ic, Canister, Record, Variant, Vec, Void, Principal, query, update, text, blob, nat } from 'azle';
 
 export const Item = Record({
     description: text,
@@ -31,19 +31,19 @@ export const AuctionDetails = Record({
 
 export type AuctionDetails = typeof AuctionDetails.tsType;
 
-export const backend = Canister({
+export default Canister({
 
     // Retrieve the detail information of auction by its id.
     // The returned detail contain status about whether the auction is active or closed,
     // and the bids make so far.
     getAuctionDetails: update([nat], AuctionDetails, (auctionId) => {
-        ic.reject("getAuctionDetails");
+        throw "getAuctionDetails";
     }),
 
     // Retrieve all auctions (open and closed) with their ids and reduced overview information.
     // Specific auctions can be separately retrieved by `getAuctionDetail`.
-    getOverviewList: update([nat], Vec(AuctionOverview), (auctionId) => {
-        ic.reject("getAuctionOverview");
+    getOverviewList: update([], Vec(AuctionOverview), (auctionId) => {
+        throw "getOverviewList";
     }),
 
     // Make a new bid for a specific auction specified by the id.
@@ -54,11 +54,11 @@ export const backend = Canister({
     // If valid, the bid is appended to the bid history.
     // Otherwise, traps with an error.
     makeBid: update([nat/*AuctionId*/, nat], Void, (auctionId, n) => {
-        ic.reject("makeBid");
+        throw "makeBid";
     }),
 
     // Register a new auction that is open for the defined duration.
     newAuction: update([Item, nat], Void, (item, n) => {
-        ic.reject("makeBid");
+        throw "newAuction";
     })
 })
