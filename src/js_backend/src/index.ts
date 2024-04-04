@@ -1,4 +1,4 @@
-import { ic, Canister, Record, Variant, Vec, Void, Principal, query, update, text, blob, nat } from 'azle';
+import { ic, init, Canister, Record, Variant, Vec, Void, Principal, query, update, text, blob, nat } from 'azle';
 
 export const Item = Record({
     description: text,
@@ -43,14 +43,16 @@ let idCounter: bigint = 0n;
 
 
 function tick() {
+  
     for (let auction of auctions) {
-        if (auction.remainingTime > 0) {
+        if (auction.remainingTime > 0n) {
             auction.remainingTime -= 1n;
         }
     }
+
+   ic.print("tick") //TBD
 }
 
-let _timer = ic.setTimerInterval(1n, tick);
 
 type AuctionId = bigint;
 
@@ -75,6 +77,10 @@ function minimumPrice(auction: Auction): bigint {
 
 
 export default Canister({
+
+    init: init([],()=>{
+      let _timer = ic.setTimerInterval(1n, tick);
+    }),
 
     // Retrieve the detail information of auction by its id.
     // The returned detail contain status about whether the auction is active or closed,
