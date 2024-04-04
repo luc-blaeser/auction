@@ -1,0 +1,6 @@
+service: () -> {
+    getAuctionDetails: (nat) -> (record {item:record {title:text; description:text; image:vec nat8}; remainingTime:nat; bidHistory:nat});
+    getOverviewList: (nat) -> (vec record {id:nat; item:record {title:text; description:text; image:vec nat8}});
+    makeBid: (nat, nat) -> ();
+    newAuction: (record {title:text; description:text; image:vec nat8}, nat) -> ();
+}

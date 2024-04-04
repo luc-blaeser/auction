@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "setup": "npm ci && dfx canister create backend && dfx generate backend && dfx deploy",
+      "setup_": "npm ci && dfx canister create backend && dfx generate backend && dfx deploy",
+    "setup": "npm ci && dfx canister create backend && dfx deploy",
     "start": "run-p frontend backend",
     "frontend": "vite --port 3000",
     "backend": "mo-dev --generate --deploy -y",
@@ -32,5 +33,8 @@
     "sass": "^1.57.1",
     "typescript": "^4.6.4",
     "vite": "^3.2.0"
-  }
+  },
+  "workspaces": [
+    "src/js_backend"
+  ]
 }
