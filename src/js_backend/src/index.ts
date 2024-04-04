@@ -24,7 +24,7 @@ export const AuctionOverview = Record({
 export type AuctionOverview = typeof AuctionOverview.tsType;
 
 export const AuctionDetails = Record({
-   bidHistory: Vec(Bid), //AuctionId,
+   bidHistory: Vec(Bid),
    item: Item,
    remainingTime: nat
  });
@@ -41,17 +41,17 @@ interface Auction {
 let auctions: Auction[] = [];
 let idCounter: bigint = 0n;
 
-/*
-async function tick(): Promise<void> {
+
+function tick() {
     for (let auction of auctions) {
         if (auction.remainingTime > 0) {
-            auction.remainingTime -= 1;
+            auction.remainingTime -= 1n;
         }
     }
 }
 
-let _timer = Timer.recurringTimer({ seconds: 1 }, tick);
-*/
+let _timer = ic.setTimerInterval(1n, tick);
+
 type AuctionId = bigint;
 
 function newAuctionId(): AuctionId {
@@ -106,9 +106,11 @@ export default Canister({
     // Otherwise, traps with an error.
     makeBid: update([nat/*AuctionId*/, nat], Void, (auctionId, price) => {
       let originator = ic.caller();
+      /* RESTORE ME: Temporarilly disabled due to lack of II credentials
       if (originator.isAnonymous()) {
         ic.trap("Anonymous caller");
       }
+      */
       let auction = findAuction(auctionId);
       if (price < minimumPrice(auction)) {
         ic.trap("Price too low");
