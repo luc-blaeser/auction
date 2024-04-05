@@ -10,7 +10,7 @@
          "gzip": true,
          "main": "src/js_backend/src/index.ts",
          "type": "custom",
-           "wasm": ".azle/backend/backend.wasm",
+         "wasm": ".azle/backend/backend.wasm",
           "metadata": [
                 {
                     "name": "candid:service",
