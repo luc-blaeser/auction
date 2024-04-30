@@ -19,7 +19,7 @@ function Navigation() {
 
         const internetIdentityUrl = import.meta.env.PROD
             ? undefined :
-            `http://localhost:4943/?canisterId=${process.env.INTERNET_IDENTITY_CANISTER_ID}`;
+            `http://${process.env.CANISTER_ID_INTERNET_IDENTITY}.localhost:4943`;
 
             await new Promise((resolve) => {
                 authClient.login({
