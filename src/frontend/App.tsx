@@ -1,5 +1,5 @@
 import './App.scss';
-import motoko from './assets/motoko.png';
+import motoko from './assets/IC_logo.svg';
 import AuctionForm from './AuctionForm';
 import AuctionList from './AuctionList';
 import Navigation from './Navigation';
@@ -12,7 +12,7 @@ function App() {
       <div>
         <img src={motoko} className="logo" alt="Motoko logo" />
       </div>
-      <h1>Motoko Auction Platform</h1>
+      <h1>Auction Platform</h1>
       <Navigation />
       <div className="content">
         <Routes>

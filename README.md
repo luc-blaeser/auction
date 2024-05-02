@@ -1,6 +1,6 @@
-# Motoko Auction Platform
+# Internet Computer Auction Platform
 
-Application case for the Motoko workshop at KTH summer school (https://cysep.conf.kth.se/).
+Application case for the IC blockchain programming workshop at KTH summer school (https://cysep.conf.kth.se/).
 
 A simple auction platform that allows to:
 * Open and view auctions
@@ -43,7 +43,7 @@ Particular checks needed for a bid:
 
 ## Documentation
 
-* [Motoko Tutorial Slides](Motoko_Tutorial.pdf)
+* [IC Blockchain Programming Tutorial Slides](Motoko_Tutorial.pdf)
 * [Motoko Language](https://internetcomputer.org/docs/current/motoko/main/motoko)
 * [Motoko Base Library](https://internetcomputer.org/docs/current/motoko/main/base)
 
