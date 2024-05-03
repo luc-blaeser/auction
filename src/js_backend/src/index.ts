@@ -1,4 +1,8 @@
-import { ic, init, Canister, Record, Variant, Vec, Void, Principal, query, update, text, blob, nat } from 'azle';
+// NOTE: Canister upgrades are not supported in this solution.
+// This would require the use of stable data structures, see the Azle documentation.
+// Moreover, the auction timer would need to be re-installed after an upgrade.
+
+import { ic, init, Canister, Record, Vec, Void, Principal, update, text, blob, nat } from 'azle';
 
 export const Item = Record({
   description: text,
@@ -41,11 +45,7 @@ interface Auction {
 let auctions: Auction[] = [];
 let idCounter: bigint = 0n;
 
-
 function tick() {
-
-  // ic.print("tick")
-
   for (let auction of auctions) {
     if (auction.remainingTime > 0n) {
       auction.remainingTime -= 1n;
@@ -53,17 +53,16 @@ function tick() {
   }
 }
 
-
 type AuctionId = bigint;
 
 function newAuctionId(): AuctionId {
-  let id = idCounter;
+  const id = idCounter;
   idCounter += 1n;
   return id;
 }
 
 function findAuction(auctionId: AuctionId): Auction {
-  let result = auctions.find(auction => auction.id === auctionId);
+  const result = auctions.find(auction => auction.id === auctionId);
   if (!result) {
     ic.trap("Inexistent id");
   }
@@ -71,25 +70,22 @@ function findAuction(auctionId: AuctionId): Auction {
 }
 
 function minimumPrice(auction: Auction): bigint {
-  let lastBid = auction.bidHistory[0];
+  const lastBid = auction.bidHistory[0];
   return lastBid ? lastBid.price + 1n : 1n;
 }
 
-
 export default Canister({
-
+  /// Install the auction timer on initialization.
   init: init([], () => {
-    let _timer = ic.setTimerInterval(1n, tick);
+    const _timer = ic.setTimerInterval(1n, tick);
   }),
+
 
   // Retrieve the detail information of auction by its id.
   // The returned detail contain status about whether the auction is active or closed,
-  // and the bids make so far.
+  // and the bids made so far.
   getAuctionDetails: update([nat], AuctionDetails, (auctionId) => {
-
-    // ic.print("getAuctionDetails");
-
-    let result = auctions.find(auction => auction.id === auctionId);
+    const result = auctions.find(auction => auction.id === auctionId);
     if (!result) {
       ic.trap("Inexistent id");
     }
@@ -99,13 +95,10 @@ export default Canister({
   // Retrieve all auctions (open and closed) with their ids and reduced overview information.
   // Specific auctions can be separately retrieved by `getAuctionDetail`.
   getOverviewList: update([], Vec(AuctionOverview), () => {
-
-    // ic.print("getOverviewList");
-
     function getOverview(auction: Auction): AuctionOverview {
       return { id: auction.id, item: auction.item };
     }
-    let overviewList = auctions.map(getOverview);
+    const overviewList = auctions.map(getOverview);
     return overviewList.reverse();
   }),
 
@@ -117,35 +110,27 @@ export default Canister({
   // If valid, the bid is appended to the bid history.
   // Otherwise, traps with an error.
   makeBid: update([nat/*AuctionId*/, nat], Void, (auctionId, price) => {
-
-    // ic.print("makeBid");
-
-    let originator = ic.caller();
-
+    const originator = ic.caller();
     if (originator.isAnonymous()) {
       ic.trap("Anonymous caller");
     }
-
-    let auction = findAuction(auctionId);
+    const auction = findAuction(auctionId);
     if (price < minimumPrice(auction)) {
       ic.trap("Price too low");
     }
-    let time = auction.remainingTime;
+    const time = auction.remainingTime;
     if (time === 0n) {
       ic.trap("Auction closed");
     }
-    let newBid: Bid = { price, time, originator };
+    const newBid: Bid = { price, time, originator };
     auction.bidHistory.unshift(newBid);
   }),
 
   // Register a new auction that is open for the defined duration.
   newAuction: update([Item, nat], Void, (item, duration) => {
-
-    // ic.print("newAuction");
-
-    let id = newAuctionId();
-    let bidHistory: Bid[] = [];
-    let newAuction: Auction = { id, item, bidHistory, remainingTime: duration };
+    const id = newAuctionId();
+    const bidHistory: Bid[] = [];
+    const newAuction: Auction = { id, item, bidHistory, remainingTime: duration };
     auctions.unshift(newAuction);
   })
 })
