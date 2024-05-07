@@ -1,12 +1,10 @@
 import './AuctionDetail.scss';
 import { useEffect, useState } from "react";
 import { AuctionDetails, Item } from "../declarations/backend/backend.did";
-import { canisterId, createActor } from "../declarations/backend";
+import { backend } from "../declarations/backend";
 import { useParams } from "react-router-dom";
 import { getImageSource } from './common';
 import { AuthClient } from '@dfinity/auth-client';
-
-const backend = createActor(canisterId);
 
 function AuctionDetail() {
     const { id } = useParams();

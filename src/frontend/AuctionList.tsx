@@ -1,11 +1,9 @@
 import './AuctionList.scss';
 import { useEffect, useState } from "react";
 import { AuctionOverview } from "../declarations/backend/backend.did";
-import { canisterId, createActor } from "../declarations/backend";
+import { backend } from "../declarations/backend";
 import { Link, useNavigate } from "react-router-dom";
 import { getImageSource } from './common';
-
-const backend = createActor(canisterId);
 
 function AuctionList() {
     const [list, setList] = useState<AuctionOverview[] | undefined>();
