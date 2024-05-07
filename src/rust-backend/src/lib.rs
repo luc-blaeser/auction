@@ -168,7 +168,7 @@ fn minimum_price(auction: &Auction) -> Nat {
 
 /// Make a new bid for a specific auction specified by the id.
 /// Checks that:
-/// * The user (`message.caller`) is authenticated.
+/// * The user (`ic_cdk.caller()`) is authenticated.
 /// * The price is valid, higher than the last bid, if existing.
 /// * The auction is still open (not finished).
 /// If valid, the bid is appended to the bid history.
