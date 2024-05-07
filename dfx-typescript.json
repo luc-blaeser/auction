@@ -1,8 +1,26 @@
 {
     "canisters": {
         "backend": {
-            "type": "motoko",
-            "main": "src/motoko-backend/AuctionServer.mo"
+            "build": "npx azle backend",
+            "candid": "src/typescript-backend/backend.did",
+            "candid_gen": "custom",
+            "declarations": {
+                "node_compatibility": true
+            },
+            "gzip": true,
+            "main": "src/typescript-backend/src/index.ts",
+            "type": "custom",
+            "wasm": ".azle/backend/backend.wasm",
+            "metadata": [
+                {
+                    "name": "candid:service",
+                    "path": "src/typescript-backend/backend.did"
+                },
+                {
+                    "name": "cdk:name",
+                    "content": "azle"
+                }
+            ]
         },
         "frontend": {
             "dependencies": [
