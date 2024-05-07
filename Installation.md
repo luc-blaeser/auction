@@ -47,7 +47,7 @@ We recommend **Visual Studio Code**, but you can also use any other IDE, if you 
 
 https://code.visualstudio.com/
 
-2. Install the **Motoko plugin** (by DFINITY Foundation) in Visual Studio Code.
+2. If you choose Motoko for the workshop: Install the **Motoko plugin** (by DFINITY Foundation) in Visual Studio Code.
 
 Menu: View -> Extensions:
 Search for "Motoko" (Motoko language support by DFINITY Foundation) and install this plugin.
@@ -61,6 +61,63 @@ git clone https://github.com/luc-blaeser/auction.git
 ```
 
 Or, alternatively if you do not have Git installed, you can download the repository as a zip-file from: https://github.com/luc-blaeser/auction
+
+# Preparing the Backend Language
+
+You have a choice of three possible backend languages:
+
+## Motoko (recommended)
+
+No extra configuration is needed.
+
+The backend source code is in `src/motoko-backend`.
+
+## Typescript (code name Azle)
+
+1. Replace the `dfx.json` file:
+
+```
+cp dfx-typescript.json dfx.json
+```
+
+The backend source code is in `src/typescript-backend`.
+
+2. Adjust the `vite.config.js` file:
+
+(line 19)
+```
+  "include": ["src"],
+```
+
+3. Install `podman`:
+
+On Ubuntu/WSL:
+
+```
+sudo apt-get install podman
+```
+
+On Mac:
+
+```
+brew install podman
+```
+
+4. Install npm packages
+
+```
+npm install
+```
+
+## Rust
+
+1. Replace the `dfx.json` file:
+
+```
+cp dfx-rust.json dfx.json
+```
+
+The backend source code is in `src/rust-backend`.
 
 # Testing the Installation
 
@@ -86,3 +143,6 @@ dfx stop
 
 * [IC Installation Instructions](https://internetcomputer.org/docs/current/developer-docs/setup/install)
 * [More detailed WSL 2 instructions](https://learn.microsoft.com/en-us/windows/wsl/install)
+* [Motoko Documentation](https://internetcomputer.org/docs/current/motoko/main/motoko)
+* [TypeScript Development Kit for IC (Azle)](https://internetcomputer.org/docs/current/developer-docs/backend/typescript)
+* [Rust Development Kit for IC](https://internetcomputer.org/docs/current/developer-docs/backend/rust)
