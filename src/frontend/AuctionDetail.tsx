@@ -1,8 +1,9 @@
 import './AuctionDetail.scss';
 import { useEffect, useState } from "react";
 import { AuctionDetails, Item } from "../declarations/backend/backend.did";
+import { backend } from "../declarations/backend";
 import { useParams } from "react-router-dom";
-import { getBackend, getImageSource } from './common';
+import { getImageSource } from './common';
 import { AuthClient } from '@dfinity/auth-client';
 
 function AuctionDetail() {
@@ -16,7 +17,6 @@ function AuctionDetail() {
     const [authenticated, setAuthenticated] = useState(false);
 
     const fetchFromBackend = async () => {
-        const backend = await getBackend();
         setAuctionDetails(await backend.getAuctionDetails(auctionId));
         const authClient = await AuthClient.create();
         setAuthenticated(await authClient.isAuthenticated());
@@ -30,7 +30,6 @@ function AuctionDetail() {
     const makeNewOffer = async () => {
         try {
             setSaving(true);
-            const backend = await getBackend();
             await backend.makeBid(auctionId, BigInt(newPrice));
             setLastError(undefined);
             setNewPrice(newPrice + 1);
