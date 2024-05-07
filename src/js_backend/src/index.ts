@@ -123,7 +123,7 @@ export default Canister({
       ic.trap("Auction closed");
     }
     const newBid: Bid = { price, time, originator };
-    auction.bidHistory.unshift(newBid);
+    auction.bidHistory.push(newBid);
   }),
 
   // Register a new auction that is open for the defined duration.
