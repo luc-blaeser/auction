@@ -1,8 +1,6 @@
 
-import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent";
+import { Actor, HttpAgent, Identity } from "@dfinity/agent";
 import { canisterId, createActor } from "../declarations/backend";
-import { _SERVICE } from "../declarations/backend/backend.did";
-import { AuthClient } from "@dfinity/auth-client";
 
 export function getImageSource(imageData: Uint8Array | number[]) {
     if (imageData != null) {
@@ -14,10 +12,8 @@ export function getImageSource(imageData: Uint8Array | number[]) {
     }
 }
 
-export async function getBackend(): Promise<ActorSubclass<_SERVICE>> {
-    const client = await AuthClient.create();
-    const identity = client.getIdentity();
-    const backend = createActor(canisterId);
+export const backend = createActor(canisterId);
+    
+export function setActorIdentity(identity: Identity) {
     (Actor.agentOf(backend) as HttpAgent).replaceIdentity(identity);
-    return backend;
 }

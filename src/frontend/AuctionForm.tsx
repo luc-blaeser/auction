@@ -1,8 +1,7 @@
 import './AuctionForm.scss';
 import { useState } from "react";
-import { canisterId, createActor } from "../declarations/backend";
 import { useNavigate } from "react-router-dom";
-import { getBackend } from './common';
+import { backend } from './common';
 
 function CreateAuction() {
     const [title, setTitle] = useState("My Auction");
@@ -20,7 +19,6 @@ function CreateAuction() {
                 description,
                 image,
             };
-            const backend = await getBackend();
             await backend.newAuction(newAuction, BigInt(duration));
             navigate("/");
         } catch (error) {
