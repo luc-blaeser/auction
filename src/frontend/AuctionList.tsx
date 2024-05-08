@@ -1,9 +1,8 @@
 import './AuctionList.scss';
 import { useEffect, useState } from "react";
 import { AuctionOverview } from "../declarations/backend/backend.did";
-import { canisterId, createActor } from "../declarations/backend";
 import { Link, useNavigate } from "react-router-dom";
-import { getBackend, getImageSource } from './common';
+import { backend, getImageSource } from './common';
 
 function AuctionList() {
     const [list, setList] = useState<AuctionOverview[] | undefined>();
@@ -25,7 +24,6 @@ function AuctionList() {
     });
 
     const fetchAuction = async () => {
-        const backend = await getBackend();
         const result = await backend.getOverviewList();
         setList(result);
     }
