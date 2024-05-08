@@ -70,24 +70,17 @@ You have a choice of three possible backend languages:
 
 No extra configuration is needed.
 
-The backend source code is in `src/motoko-backend`.
+The backend source code is in `src/motoko_backend`.
 
 ## Typescript (code name Azle)
 
 1. Replace the `dfx.json` file:
 
 ```
-cp dfx-typescript.json dfx.json
+cp dfx_typescript.json dfx.json
 ```
 
-The backend source code is in `src/typescript-backend`.
-
-2. Adjust the `vite.config.js` file:
-
-(line 19)
-```
-  "include": ["src"],
-```
+The backend source code is in `src/typescript_backend`.
 
 3. Install `podman`:
 
@@ -114,10 +107,10 @@ npm install
 1. Replace the `dfx.json` file:
 
 ```
-cp dfx-rust.json dfx.json
+cp dfx_rust.json dfx.json
 ```
 
-The backend source code is in `src/rust-backend`.
+The backend source code is in `src/rust_backend`.
 
 # Testing the Installation
 

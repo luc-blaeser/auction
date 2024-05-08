@@ -1,5 +1,5 @@
 {
-  "name": "vite-react-motoko",
+  "name": "auction",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,7 +9,7 @@
     "frontend": "vite --port 3000",
     "backend": "mo-dev --generate --deploy -y",
     "build": "tsc && vite build",
-    "format": "prettier --write \"src/**/*.{json,js,jsx,ts,tsx,css,scss}\" \"src/motoko-backend/**/*.mo\""
+    "format": "prettier --write \"src/**/*.{json,js,jsx,ts,tsx,css,scss}\" \"src/motoko_backend/**/*.mo\""
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -32,5 +32,8 @@
     "sass": "^1.57.1",
     "typescript": "^4.6.4",
     "vite": "^3.2.0"
-  }
+  },
+  "workspaces": [
+    "src/typescript_backend"
+  ]
 }

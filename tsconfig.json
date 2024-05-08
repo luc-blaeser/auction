@@ -16,6 +16,7 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src/frontend"], // Change to ["src"] for Azle support
+  "include": ["src"],
+  "exclude" : ["src/typescript_backend"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

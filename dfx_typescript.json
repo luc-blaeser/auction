@@ -2,19 +2,19 @@
     "canisters": {
         "backend": {
             "build": "npx azle backend",
-            "candid": "src/typescript-backend/backend.did",
+            "candid": "src/typescript_backend/backend.did",
             "candid_gen": "custom",
             "declarations": {
                 "node_compatibility": true
             },
             "gzip": true,
-            "main": "src/typescript-backend/src/index.ts",
+            "main": "src/typescript_backend/src/index.ts",
             "type": "custom",
             "wasm": ".azle/backend/backend.wasm",
             "metadata": [
                 {
                     "name": "candid:service",
-                    "path": "src/typescript-backend/backend.did"
+                    "path": "src/typescript_backend/backend.did"
                 },
                 {
                     "name": "cdk:name",

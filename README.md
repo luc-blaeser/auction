@@ -33,9 +33,9 @@ Local frontend: http://localhost:3000/
 
 You can focus on the backend development: 
 
-* For Motoko: `src/motoko-backend/AuctionServer.mo`
-* For Typescript: `src/typescript-backend/src/index.ts`
-* For Rust: `src/rust-backend/src/lib.rs`
+* For Motoko: `src/motoko_backend/AuctionServer.mo`
+* For Typescript: `src/typescript_backend/src/index.ts`
+* For Rust: `src/rust_backend/src/lib.rs`
 
 Functionality to add:
 * Storing and retrieving the auction data in the actor.

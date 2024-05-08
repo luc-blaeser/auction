@@ -1,9 +1,8 @@
 {
     "canisters": {
         "backend": {
-            "candid": "src/rust-backend/backend.did",
-            "package": "backend",
-            "type": "rust"
+            "type": "motoko",
+            "main": "src/motoko_backend/AuctionServer.mo"
         },
         "frontend": {
             "dependencies": [
