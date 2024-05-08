@@ -2,7 +2,7 @@
     "canisters": {
         "backend": {
             "type": "motoko",
-            "main": "src/motoko-backend/AuctionServer.mo"
+            "main": "src/motoko_backend/AuctionServer.mo"
         },
         "frontend": {
             "dependencies": [

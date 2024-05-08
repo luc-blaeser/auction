@@ -4,10 +4,10 @@ The code template contains multiple canisters:
 * Backend: <-- **Focus of this workshop**
     
     This depends on your language choice:
-    - **Motoko** (recommended): `src/motoko-backend/`
-    - Typescript: `src/typescript-backend/`
-    - Rust: `src/rust-backend/`
-* Motoko backend: `src/motoko-backend/` <-- **Focus of this workshop if you choose Motoko.**
+    - **Motoko** (recommended): `src/motoko_backend/`
+    - Typescript: `src/typescript_backend/`
+    - Rust: `src/rust_backend/`
+
 * Web frontend: `src/frontend/` Already pre-implemented, using React and Typescript.
 * Internet Identity: Used for authentication. The binary is downloaded during local development.
 
