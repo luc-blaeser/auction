@@ -2,7 +2,7 @@
 // This would require the use of stable data structures, see the Azle documentation.
 // Moreover, the auction timer would need to be re-installed after an upgrade.
 
-import { ic, init, Canister, Record, Vec, Void, Principal, update, text, blob, nat } from 'azle';
+import { ic, init, Canister, Record, Vec, Void, Principal, update, text, blob, nat, preUpgrade, postUpgrade } from 'azle';
 
 export const Item = Record({
   description: text,
@@ -83,6 +83,7 @@ export default Canister({
   init: init([], () => {
     installTimer();
   }),
+
 
   // Re-install the auction timer on upgrade.
   // NOTE: The state is not yet preserved across upgrades. See comment above.
