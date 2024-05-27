@@ -58,9 +58,16 @@ Search for "Motoko" (Motoko language support by DFINITY Foundation) and install 
 
 ```
 git clone https://github.com/luc-blaeser/auction.git
+cd auction
 ```
 
 Or, alternatively if you do not have Git installed, you can download the repository as a zip-file from: https://github.com/luc-blaeser/auction
+
+4. Install the package dependencies in the source folder:
+
+```
+npm install
+```
 
 # Preparing the Backend Language
 
@@ -82,7 +89,7 @@ cp dfx_typescript.json dfx.json
 
 The backend source code is in `src/typescript_backend`.
 
-3. Install `podman`:
+2. Install `podman`:
 
 On Ubuntu/WSL:
 
@@ -96,18 +103,33 @@ On Mac:
 brew install podman
 ```
 
-4. Install npm packages
-
-```
-npm install
-```
-
 ## Rust
 
 1. Replace the `dfx.json` file:
 
 ```
 cp dfx_rust.json dfx.json
+```
+
+2. Install a recent version of Rust with WebAssembly support:
+
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+rustup target add wasm32-unknown-unknown
+```
+
+3. Install LLVM/Clang compiler:
+
+On Ubuntu/WSL:
+
+```
+sudo apt-get install clang
+```
+
+On Mac:
+
+```
+brew install llvm
 ```
 
 The backend source code is in `src/rust_backend`.
