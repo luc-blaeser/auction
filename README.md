@@ -57,7 +57,7 @@ Optional: Support canister upgrades:
 
 ## Documentation
 
-* [IC Blockchain Programming Tutorial Slides](Motoko_Tutorial.pdf)
+* [IC Blockchain Programming Tutorial Slides](ICP_Programming_Tutorial.pdf)
 * [Motoko Language](https://internetcomputer.org/docs/current/motoko/main/motoko)
 * [Motoko Base Library](https://internetcomputer.org/docs/current/motoko/main/base)
 * [TypeScript Development Kit for IC (Azle)](https://internetcomputer.org/docs/current/developer-docs/backend/typescript)
