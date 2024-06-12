@@ -113,7 +113,7 @@ function AuctionDetail() {
                 <thead>
                     <tr>
                         <th>Price</th>
-                        <th>Time after start</th>
+                        <th>Time before end</th>
                         <th>Originator</th>
                     </tr>
                 </thead>
@@ -160,7 +160,7 @@ function AuctionDetail() {
                         <h2>{isClosed ? "Final Deal" : "Current Bid"}</h2>
                         <p className="main-price">{currentBid.price.toString()} ICP</p>
                         <p>by {currentBid.originator.toString()}</p>
-                        <p>{currentBid.time.toString()} seconds after start</p>
+                        <p>{currentBid.time.toString()} seconds before end</p>
                     </div>
                 }
                 {!isClosed &&
