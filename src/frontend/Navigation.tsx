@@ -17,16 +17,19 @@ function Navigation() {
     const signIn = async () => {
         const authClient = await authClientPromise;
 
-        const internetIdentityUrl = import.meta.env.PROD
+        const hostname = window.location.hostname;
+        const isLocal = hostname === "localhost" ||hostname.endsWith(".localhost") || hostname === "127.0.0.1";
+
+        const internetIdentityUrl = !isLocal
             ? undefined :
             `http://${process.env.CANISTER_ID_INTERNET_IDENTITY}.localhost:4943`;
 
-            await new Promise((resolve) => {
-                authClient.login({
-                    identityProvider: internetIdentityUrl,
-                    onSuccess: () => resolve(undefined),
-                });
+        await new Promise((resolve) => {
+            authClient.login({
+                identityProvider: internetIdentityUrl,
+                onSuccess: () => resolve(undefined),
             });
+        });
 
         const identity = authClient.getIdentity();
         updateIdentity(identity);
