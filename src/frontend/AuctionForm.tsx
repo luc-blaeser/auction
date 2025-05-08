@@ -46,7 +46,7 @@ function CreateAuction() {
     }
 
     // TODO: Faster way of concatenation
-    const concatUint8Arrays = (left: Uint8Array, right: Uint8Array): Uint8Array => {
+    const concatUint8Arrays = (left: Uint8Array<ArrayBuffer>, right: Uint8Array<ArrayBufferLike>): Uint8Array<ArrayBuffer> => {
         let temporary: number[] = [];
         for (let element of left) {
             temporary.push(element);
