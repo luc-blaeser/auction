@@ -1,10 +1,16 @@
-import Principal "mo:base/Principal";
-import Timer "mo:base/Timer";
-import Debug "mo:base/Debug";
-import List "mo:base/List";
+import Principal "mo:new-base/Principal";
+import Time "mo:new-base/Time";
+import List "mo:new-base/List";
+import Nat "mo:new-base/Nat";
+import Int "mo:new-base/Int";
+import Map "mo:new-base/Map";
+import Runtime "mo:new-base/Runtime";
+import Iter "mo:new-base/Iter";
+import Random "mo:new-base/Random";
+import Nat64 "mo:new-base/Nat64";
 
 /// Backend server actor for the auction platform
-actor {
+persistent actor {
   /// Auction item. Shared type.
   type Item = {
     /// Auction title
@@ -19,8 +25,8 @@ actor {
   type Bid = {
     /// Price in the unit of the currency (ICP).
     price : Nat;
-    /// Point in time of the bid, measured as the
-    /// remaining until the closing of the auction.
+    /// Point in time of the bid, measured in seconds back
+    /// from the closing of the auction.
     time : Nat;
     /// Authenticated user id of this bid.
     originator : Principal.Principal;
@@ -45,7 +51,7 @@ actor {
     item : Item;
     /// Series of valid bids in this auction, sorted by price.
     bidHistory : [Bid];
-    /// Remaining time until the end of the auction.
+    /// Remaining duration in seconds until the end of the auction.
     /// `0` means that the auction is closed.
     /// The last entry in `bidHistory`, if existing, denotes
     /// the auction winner.
@@ -55,7 +61,7 @@ actor {
   /// Register a new auction that is open for the defined duration.
   public func newAuction(item : Item, duration : Nat) : async () {
     // TODO: Implementation
-    Debug.trap("not yet implemented");
+    Run.trap("not yet implemented");
   };
 
   /// Retrieve all auctions (open and closed) with their ids and reduced overview information.
@@ -65,12 +71,18 @@ actor {
     [];
   };
 
+  /// Internal helper to convert ICP time to seconds.
+  func timeInSeconds(difference: Time.Time) : Nat {
+    let nanosecondsPerSecond = 1_000_000_000;
+    Int.toNat(difference) / nanosecondsPerSecond;
+  };
+  
   /// Retrieve the detail information of auction by its id.
   /// The returned detail contain status about whether the auction is active or closed,
   /// and the bids make so far.
   public func getAuctionDetails(auctionId : AuctionId) : async AuctionDetails {
     // TODO: Implementation
-    Debug.trap("not yet implemented");
+    Runtime.trap("not yet implemented");
   };
 
   /// Make a new bid for a specific auction specified by the id.
@@ -82,6 +94,6 @@ actor {
   /// Otherwise, traps with an error.
   public shared (message) func makeBid(auctionId : AuctionId, price : Nat) : async () {
     // TODO: Implementation
-    Debug.trap("not yet implemented");
+    Runtime.trap("not yet implemented");
   };
 };

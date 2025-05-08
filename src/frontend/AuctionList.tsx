@@ -7,10 +7,10 @@ import { backend, getImageSource } from './common';
 function AuctionList() {
     const [list, setList] = useState<AuctionOverview[] | undefined>();
     const navigate = useNavigate();
-    const navigationLink = (auctionId: number) => "/viewAuction/" + auctionId;
+    const navigationLink = (auctionId: bigint) => "/viewAuction/" + auctionId.toString();
 
     const overviewList = list?.map(overview => {
-        const id = +overview.id.toString();
+        const id = overview.id;
         return (
             <li key={id} className="gallery-item" onClick={(_) => navigate(navigationLink(id))}>
                 <div className="auction-title">{overview.item.title}</div>

@@ -7,7 +7,7 @@ import { AuthClient } from '@dfinity/auth-client';
 
 function AuctionDetail() {
     const { id } = useParams();
-    const auctionId = BigInt(id as string);
+    const auctionId = BigInt(id ?? 0);
 
     const [auctionDetails, setAuctionDetails] = useState<AuctionDetails | undefined>();
     const [newPrice, setNewPrice] = useState(0);
