@@ -1,10 +1,16 @@
-import Principal "mo:base/Principal";
-import Timer "mo:base/Timer";
-import Debug "mo:base/Debug";
-import List "mo:base/List";
+import Principal "mo:new-base/Principal";
+import Time "mo:new-base/Time";
+import List "mo:new-base/List";
+import Nat "mo:new-base/Nat";
+import Int "mo:new-base/Int";
+import Map "mo:new-base/Map";
+import Runtime "mo:new-base/Runtime";
+import Iter "mo:new-base/Iter";
+import Random "mo:new-base/Random";
+import Nat64 "mo:new-base/Nat64";
 
 /// Backend server actor for the auction platform
-actor {
+persistent actor {
   /// Auction item. Shared type.
   type Item = {
     /// Auction title
@@ -19,8 +25,8 @@ actor {
   type Bid = {
     /// Price in the unit of the currency (ICP).
     price : Nat;
-    /// Point in time of the bid, measured as the
-    /// remaining until the closing of the auction.
+    /// Point in time of the bid, measured in seconds back
+    /// from the closing of the auction.
     time : Nat;
     /// Authenticated user id of this bid.
     originator : Principal.Principal;
@@ -45,55 +51,42 @@ actor {
     item : Item;
     /// Series of valid bids in this auction, sorted by price.
     bidHistory : [Bid];
-    /// Remaining time until the end of the auction.
+    /// Remaining duration in seconds until the end of the auction.
     /// `0` means that the auction is closed.
     /// The last entry in `bidHistory`, if existing, denotes
     /// the auction winner.
     remainingTime : Nat;
   };
 
-  /// Internal, non-shared but stable type, storing all information
+  /// Internal, non-shared type, storing all information
   /// about an auction. Using a separate type than `AuctionDetail`
   /// to enable simpler and faster extension of the bid history
   /// by means of a `List`.
   type Auction = {
     id : AuctionId;
     item : Item;
-    var bidHistory : List.List<Bid>;
-    var remainingTime : Nat;
+    bidHistory : List.List<Bid>;
+    closingTime : Time.Time;
   };
 
-  /// Stable list of all auctions.
-  stable var auctions = List.nil<Auction>();
-  /// Counter for generating new auction ids.
-  stable var idCounter = 0;
-
-  /// Timer event occurring every second, decreasing the remaining
-  /// time of each active (unfinished) auction.
-  func tick() : async () {
-    for (auction in List.toIter(auctions)) {
-      if (auction.remainingTime > 0) {
-        auction.remainingTime -= 1;
-      };
-    };
-  };
-
-  /// Installing a timer (non-stable), will be reinstalled on canister upgrade.
-  let _timer = Timer.recurringTimer<system>(#seconds 1, tick);
+  /// Map auction id to auctions.
+  let auctions = Map.empty<AuctionId, Auction>();
+  /// Secure random number generator for auction id generation.
+  transient let random = Random.crypto();
 
   /// Internal function for generating a new auction id by using the `idCounter`.
-  func newAuctionId() : AuctionId {
-    let id = idCounter;
-    idCounter += 1;
-    id;
+  func newAuctionId() : async* AuctionId {
+    Nat64.toNat(await* random.nat64());
   };
 
-  /// Register a new auction that is open for the defined duration.
+  /// Register a new auction that is open for the defined duration in seconds.
   public func newAuction(item : Item, duration : Nat) : async () {
-    let id = newAuctionId();
-    let bidHistory = List.nil<Bid>();
-    let newAuction = { id; item; var bidHistory; var remainingTime = duration };
-    auctions := List.push(newAuction, auctions);
+    let id = await* newAuctionId();
+    let bidHistory = List.empty<Bid>();
+    let startTime = Time.now();
+    let closingTime = startTime + Time.toNanoseconds(#seconds(duration));
+    let newAuction = { id; item; bidHistory; closingTime };
+    Map.add(auctions, Nat.compare, id, newAuction);
   };
 
   /// Retrieve all auctions (open and closed) with their ids and reduced overview information.
@@ -103,35 +96,47 @@ actor {
       id = auction.id;
       item = auction.item;
     };
-    let overviewList = List.map<Auction, AuctionOverview>(auctions, getOverview);
-    List.toArray(List.reverse(overviewList));
+    let overviewList = Iter.map(Map.values(auctions), getOverview);
+    Iter.toArray(overviewList);
   };
 
   /// Internal helper function for retrieving an auction by its id.
   /// Traps if the id is inexistent.
   func findAuction(auctionId : AuctionId) : Auction {
-    let result = List.find<Auction>(auctions, func auction = auction.id == auctionId);
+    let result = Map.get(auctions, Nat.compare, auctionId);
     switch (result) {
-      case null Debug.trap("Inexistent id");
+      case null Runtime.trap("Inexistent id");
       case (?auction) auction;
     };
   };
 
+  /// Internal helper to convert ICP time to seconds.
+  func timeInSeconds(difference: Time.Time) : Nat {
+    let nanosecondsPerSecond = 1_000_000_000;
+    Int.toNat(difference) / nanosecondsPerSecond;
+  };
+  
   /// Retrieve the detail information of auction by its id.
   /// The returned detail contain status about whether the auction is active or closed,
   /// and the bids make so far.
   public func getAuctionDetails(auctionId : AuctionId) : async AuctionDetails {
     let auction = findAuction(auctionId);
-    let bidHistory = List.toArray(List.reverse(auction.bidHistory));
-    { item = auction.item; bidHistory; remainingTime = auction.remainingTime };
+    let bidHistory = List.toArray(auction.bidHistory);
+    let currentTime = Time.now();
+    let timeDifference = auction.closingTime - currentTime;
+    let remainingTime = timeInSeconds(Int.max(0, timeDifference));
+    { item = auction.item; bidHistory; remainingTime };
   };
 
   /// Internal helper function to retrieve the minimum price for the next bid in an auction.
   /// The minimum price is one unit of the currency larger than the last bid.
   func minimumPrice(auction : Auction) : Nat {
-    switch (auction.bidHistory) {
-      case null 1;
-      case (?(lastBid, _)) lastBid.price + 1;
+    let size = List.size(auction.bidHistory);
+    if (size == 0) {
+      1;
+    } else {
+      let lastBid = List.get(auction.bidHistory, size - 1 : Nat);
+      lastBid.price + 1;
     };
   };
 
@@ -145,17 +150,18 @@ actor {
   public shared (message) func makeBid(auctionId : AuctionId, price : Nat) : async () {
     let originator = message.caller;
     if (Principal.isAnonymous(originator)) {
-      Debug.trap("Anonymous caller");
+      Runtime.trap("Anonymous caller");
     };
     let auction = findAuction(auctionId);
     if (price < minimumPrice(auction)) {
-      Debug.trap("Price too low");
+      Runtime.trap("Price too low");
     };
-    let time = auction.remainingTime;
-    if (time == 0) {
-      Debug.trap("Auction closed");
+    let currentTime = Time.now();
+    if (currentTime >= auction.closingTime) {
+      Runtime.trap("Auction closed");
     };
+    let time = timeInSeconds(auction.closingTime - currentTime);
     let newBid = { price; time; originator };
-    auction.bidHistory := List.push(newBid, auction.bidHistory);
+    List.add(auction.bidHistory, newBid);
   };
 };

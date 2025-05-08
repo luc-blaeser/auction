@@ -3,3 +3,5 @@ dist/
 node_modules/
 src/declarations/
 target/
+
+.mops
