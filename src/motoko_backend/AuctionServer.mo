@@ -1,13 +1,13 @@
 import Principal "mo:new-base/Principal";
-import Time "mo:new-base/Time";
+import Map "mo:new-base/Map";
+import Iter "mo:new-base/Iter";
 import List "mo:new-base/List";
 import Nat "mo:new-base/Nat";
-import Int "mo:new-base/Int";
-import Map "mo:new-base/Map";
-import Runtime "mo:new-base/Runtime";
-import Iter "mo:new-base/Iter";
-import Random "mo:new-base/Random";
 import Nat64 "mo:new-base/Nat64";
+import Int "mo:new-base/Int";
+import Time "mo:new-base/Time";
+import Runtime "mo:new-base/Runtime";
+import Random "mo:new-base/Random";
 
 /// Backend server actor for the auction platform
 persistent actor {

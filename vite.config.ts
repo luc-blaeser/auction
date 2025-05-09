@@ -1,7 +1,8 @@
 import react from '@vitejs/plugin-react';
 import { existsSync, readFileSync } from 'fs';
-import { join } from 'path';
+import path, { join } from 'path';
 import { defineConfig } from 'vite';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 const localNetwork = 'local';
 const network = process.env['DFX_NETWORK'] || localNetwork;
@@ -24,7 +25,17 @@ const canisterIds = JSON.parse(readFileSync(canisterIdPath, 'utf8'));
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: path.resolve(__dirname, './src/frontend/assets/.ic-assets.json5'),
+          dest: './',
+        },
+      ],
+    }),
+  ],
   define: {
     global: 'window',
     'process.env.DFX_NETWORK': JSON.stringify(process.env.DFX_NETWORK),
