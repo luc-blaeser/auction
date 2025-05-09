@@ -61,7 +61,7 @@ persistent actor {
   /// Register a new auction that is open for the defined duration.
   public func newAuction(item : Item, duration : Nat) : async () {
     // TODO: Implementation
-    Run.trap("not yet implemented");
+    Runtime.trap("not yet implemented");
   };
 
   /// Retrieve all auctions (open and closed) with their ids and reduced overview information.
@@ -72,11 +72,11 @@ persistent actor {
   };
 
   /// Internal helper to convert ICP time to seconds.
-  func timeInSeconds(difference: Time.Time) : Nat {
+  func timeInSeconds(difference : Time.Time) : Nat {
     let nanosecondsPerSecond = 1_000_000_000;
     Int.toNat(difference) / nanosecondsPerSecond;
   };
-  
+
   /// Retrieve the detail information of auction by its id.
   /// The returned detail contain status about whether the auction is active or closed,
   /// and the bids make so far.
