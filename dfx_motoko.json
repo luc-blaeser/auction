@@ -27,5 +27,10 @@
             },
             "frontend": {}
         }
+    },
+    "defaults": {
+        "build": {
+            "packtool": "mops sources"
+        }
     }
 }
