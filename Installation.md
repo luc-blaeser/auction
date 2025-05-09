@@ -39,6 +39,12 @@ Install package from the `node.js` webpage: https://nodejs.org/en/download
 sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)"
 ```
 
+3. Install Mops, the package manager for Motoko (https://mops.one):
+
+```
+curl -fsSL cli.mops.one/install.sh | sh
+```
+
 # Development Environment
 
 We recommend **Visual Studio Code**, but you can also use any other IDE, if you prefer.
@@ -63,7 +69,7 @@ cd auction
 
 Or, alternatively if you do not have Git installed, you can download the repository as a zip-file from: https://github.com/luc-blaeser/auction
 
-4. Install the package dependencies in the source folder:
+4. Install the project package dependencies in the source folder:
 
 ```
 npm install

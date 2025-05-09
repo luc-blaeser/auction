@@ -5,9 +5,9 @@ The code template contains multiple canisters:
     
     This depends on your language choice:
     - **Motoko** (recommended): `src/motoko_backend/`
-    - Typescript: `src/typescript_backend/`
     - Rust: `src/rust_backend/`
-
+    - Typescript (beta): `src/typescript_backend/`
+    
 * Web frontend: `src/frontend/` Already pre-implemented, using React and Typescript.
 * Internet Identity: Used for authentication. The binary is downloaded during local development.
 
