@@ -85,30 +85,6 @@ No extra configuration is needed.
 
 The backend source code is in `src/motoko_backend`.
 
-## Typescript (code name Azle)
-
-1. Replace the `dfx.json` file:
-
-```
-cp dfx_typescript.json dfx.json
-```
-
-The backend source code is in `src/typescript_backend`.
-
-2. Install `podman`:
-
-On Ubuntu/WSL:
-
-```
-sudo apt-get install podman
-```
-
-On Mac:
-
-```
-brew install podman
-```
-
 ## Rust
 
 1. Replace the `dfx.json` file:
@@ -139,6 +115,30 @@ brew install llvm
 ```
 
 The backend source code is in `src/rust_backend`.
+
+## Typescript (code name Azle)
+
+1. Replace the `dfx.json` file:
+
+```
+cp dfx_typescript.json dfx.json
+```
+
+The backend source code is in `src/typescript_backend`.
+
+2. Install `podman`:
+
+On Ubuntu/WSL:
+
+```
+sudo apt-get install podman
+```
+
+On Mac:
+
+```
+brew install podman
+```
 
 # Testing the Installation
 

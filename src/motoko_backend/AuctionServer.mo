@@ -25,8 +25,8 @@ persistent actor {
   type Bid = {
     /// Price in the unit of the currency (ICP).
     price : Nat;
-    /// Point in time of the bid, measured in seconds back
-    /// from the closing of the auction.
+    /// Point in time of the bid, measured as the
+    /// remaining seconds until the closing of the auction.
     time : Nat;
     /// Authenticated user id of this bid.
     originator : Principal.Principal;
@@ -59,7 +59,7 @@ persistent actor {
   };
 
   /// Internal, non-shared type, storing all information
-  /// about an auction. Using a separate type than `AuctionDetail`
+  /// about an auction. Using a separate type than `AuctionDetails`
   /// to enable simpler and faster extension of the bid history
   /// by means of a `List`.
   type Auction = {
