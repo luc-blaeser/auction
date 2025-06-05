@@ -1,8 +1,18 @@
 {
     "canisters": {
         "backend": {
-            "type": "motoko",
-            "main": "src/motoko_backend/AuctionServer.mo"
+            "type": "azle",
+            "candid": "src/typescript_backend/backend.did",
+            "main": "src/typescript_backend/src/index.ts",
+            "declarations": {
+                "output": "src/declarations/backend",
+                "node_compatibility": true
+            },
+            "custom": {
+                "candid": "src/typescript_backend/backend.did",
+                "candid_gen": "custom",
+                "experimental": true
+            }
         },
         "frontend": {
             "dependencies": [
@@ -26,11 +36,6 @@
                 }
             },
             "frontend": {}
-        }
-    },
-    "defaults": {
-        "build": {
-            "packtool": "mops sources"
         }
     }
 }

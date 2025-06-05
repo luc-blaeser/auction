@@ -2,69 +2,81 @@
 // This would require the use of stable data structures, see the Azle documentation.
 // Moreover, the auction timer would need to be re-installed after an upgrade.
 
-import { ic, init, Canister, Record, Vec, Void, Principal, update, text, blob, nat, preUpgrade, postUpgrade } from 'azle';
+import { msgCaller, trap, IDL, call, update, Principal, time as icpTime } from 'azle';
 
-export const Item = Record({
-  description: text,
-  image: blob,
-  title: text
+export type AuctionId = bigint;
+
+export interface Item {
+  description: string,
+  image: Uint8Array,
+  title: string
+};
+
+export const idlItem = IDL.Record({
+  description: IDL.Text,
+  image: IDL.Vec(IDL.Nat8),
+  title: IDL.Text,
 });
 
-export type Item = typeof Item.tsType;
-
-export const Bid = Record({
+export interface Bid {
   originator: Principal,
-  price: nat,
-  time: nat
+  price: bigint,
+  time: bigint,
+};
+
+export const idlBid = IDL.Record({
+  originator: IDL.Principal,
+  price: IDL.Nat,
+  time: IDL.Nat
 });
 
-export type Bid = typeof Bid.tsType;
-
-export const AuctionOverview = Record({
-  id: nat, //AuctionId,
-  item: Item
-});
-
-export type AuctionOverview = typeof AuctionOverview.tsType;
-
-export const AuctionDetails = Record({
-  bidHistory: Vec(Bid),
+export interface AuctionOverview {
+  id: bigint,
   item: Item,
-  remainingTime: nat
+}
+
+export const idlAuctionOverview = IDL.Record({
+  id: IDL.Nat,
+  item: idlItem,
 });
 
-export type AuctionDetails = typeof AuctionDetails.tsType;
+export interface AuctionDetails {
+  bidHistory: Bid[],
+  item: Item,
+  remainingTime: bigint,
+}
 
-interface Auction {
+export const idlAuctionDetails = IDL.Record({
+  bidHistory: IDL.Vec(idlBid),
+  item: idlItem,
+  remainingTime: IDL.Nat,
+});
+
+export interface Auction {
   id: AuctionId;
   item: Item;
   bidHistory: Bid[];
-  remainingTime: bigint;
+  closingTime: bigint;
 }
 
 let auctions: Auction[] = [];
-let idCounter: bigint = 0n;
 
-function tick() {
-  for (let auction of auctions) {
-    if (auction.remainingTime > 0n) {
-      auction.remainingTime -= 1n;
-    }
-  }
-}
-
-type AuctionId = bigint;
-
-function newAuctionId(): AuctionId {
-  const id = idCounter;
-  idCounter += 1n;
-  return id;
+const MANAGEMENT_CANISTER_ID = 'aaaaa-aa';
+    
+async function newAuctionId(): Promise<AuctionId> {
+  // Can be optimized by caching unused bytes of random blob between `newAuctionId` 
+  // calls and re-fetching blob when all bytes have been consumed.
+  const blob = await call<undefined, Uint8Array>(MANAGEMENT_CANISTER_ID, 'raw_rand', {
+    returnIdlType: IDL.Vec(IDL.Nat8)
+  });
+  const view = new DataView(blob.buffer);
+  return view.getBigUint64(0, false);
 }
 
 function findAuction(auctionId: AuctionId): Auction {
   const result = auctions.find(auction => auction.id === auctionId);
   if (!result) {
-    ic.trap("Inexistent id");
+    trap("Inexistent id");
   }
   return result!;
 }
@@ -74,43 +86,41 @@ function minimumPrice(auction: Auction): bigint {
   return lastBid ? lastBid.price + 1n : 1n;
 }
 
-function installTimer() {
-    const _timer = ic.setTimerInterval(1n, tick);
-}
+const NANO_SECONFS_PER_SECOND = 1_000_000_000n;
 
-export default Canister({
-  /// Install the auction timer on initialization.
-  init: init([], () => {
-    installTimer();
-  }),
-
-
-  // Re-install the auction timer on upgrade.
-  // NOTE: The state is not yet preserved across upgrades. See comment above.
-  postUpgrade: postUpgrade([], () => {
-    installTimer();
-  }),
-
+export default class {
   // Retrieve the detail information of auction by its id.
   // The returned detail contain status about whether the auction is active or closed,
   // and the bids made so far.
-  getAuctionDetails: update([nat], AuctionDetails, (auctionId) => {
+  @update([IDL.Nat], idlAuctionDetails)
+  getAuctionDetails(auctionId: bigint): AuctionDetails {
     const result = auctions.find(auction => auction.id === auctionId);
     if (!result) {
-      ic.trap("Inexistent id");
+      trap("Inexistent id");
     }
-    return result!;
-  }),
+    const currentTime = icpTime();
+    let timeDifference = result.closingTime - currentTime;
+    if (timeDifference < 0) {
+      timeDifference = 0n;
+    }
+    const remainingTime = timeDifference / NANO_SECONFS_PER_SECOND;
+    return {
+      item: result.item,
+      bidHistory: result.bidHistory,
+      remainingTime
+    };
+  }
 
   // Retrieve all auctions (open and closed) with their ids and reduced overview information.
   // Specific auctions can be separately retrieved by `getAuctionDetail`.
-  getOverviewList: update([], Vec(AuctionOverview), () => {
+  @update([], IDL.Vec(idlAuctionOverview))
+  getOverviewList(): AuctionOverview[] {
     function getOverview(auction: Auction): AuctionOverview {
       return { id: auction.id, item: auction.item };
     }
     const overviewList = auctions.map(getOverview);
     return overviewList.reverse();
-  }),
+  }
 
   // Make a new bid for a specific auction specified by the id.
   // Checks that:
@@ -119,28 +129,33 @@ export default Canister({
   // * The auction is still open (not finished).
   // If valid, the bid is appended to the bid history.
   // Otherwise, traps with an error.
-  makeBid: update([nat/*AuctionId*/, nat], Void, (auctionId, price) => {
-    const originator = ic.caller();
+  @update([IDL.Nat, IDL.Nat])
+  makeBid(auctionId: bigint, price: bigint): void {
+    const originator = msgCaller();
     if (originator.isAnonymous()) {
-      ic.trap("Anonymous caller");
+      trap("Anonymous caller");
     }
     const auction = findAuction(auctionId);
     if (price < minimumPrice(auction)) {
-      ic.trap("Price too low");
+      trap("Price too low");
     }
-    const time = auction.remainingTime;
-    if (time === 0n) {
-      ic.trap("Auction closed");
+    const currentTime = icpTime();
+    if (currentTime >= auction.closingTime) {
+      trap("Auction closed");
     }
-    const newBid: Bid = { price, time, originator };
+    const time = (auction.closingTime - currentTime) / NANO_SECONFS_PER_SECOND;
+    const newBid = { price, time, originator };
     auction.bidHistory.push(newBid);
-  }),
+  }
 
   // Register a new auction that is open for the defined duration.
-  newAuction: update([Item, nat], Void, (item, duration) => {
-    const id = newAuctionId();
+  @update([idlItem, IDL.Nat])
+  async newAuction(item: Item, duration: bigint): Promise<void> {
+    const id = await newAuctionId();
     const bidHistory: Bid[] = [];
-    const newAuction: Auction = { id, item, bidHistory, remainingTime: duration };
+    const startTime = icpTime();
+    const closingTime = startTime + duration * NANO_SECONFS_PER_SECOND;
+    const newAuction = { id, item, bidHistory, closingTime };
     auctions.unshift(newAuction);
-  })
-})
+  }
+}
