@@ -53,7 +53,7 @@ We recommend **Visual Studio Code**, but you can also use any other IDE, if you 
 
 https://code.visualstudio.com/
 
-2. If you choose Motoko for the workshop: Install the **Motoko plugin** (by DFINITY Foundation) in Visual Studio Code.
+2. Install the **Motoko plugin** (by DFINITY Foundation) in Visual Studio Code.
 
 Menu: View -> Extensions:
 Search for "Motoko" (Motoko language support by DFINITY Foundation) and install this plugin.
@@ -75,41 +75,32 @@ Or, alternatively if you do not have Git installed, you can download the reposit
 npm install
 ```
 
-# Preparing the Backend Language
+# Testing the Installation
 
-You have a choice of three possible backend languages:
+You can run the application locally with **dfx**:
 
-## Motoko (recommended)
+In the folder `auction` (of the local repository folder):
+```
+dfx start --clean --background
+npm run setup
+npm start
+```
 
-No extra configuration is needed.
+A local web frontend runs at: http://localhost:3000/
+
+The application is not yet fully functional as backend features need to be implemented. This is the focus of the workshop.
 
 The backend source code is in `src/motoko_backend`.
 
-## Typescript (code name Azle)
-
-1. Replace the `dfx.json` file:
-
+After testing, you can terminate the **npm** process (ctrl+c) and then stop **dfx**:
 ```
-cp dfx_typescript.json dfx.json
+dfx stop
 ```
 
-The backend source code is in `src/typescript_backend`.
+# Comparing to Other Languages
+The workshop focuses on Motoko and there is an option to implement the same functionality in other backend languages (Rust and TypeScript) for comparison purposes. We recommend setting this up later during workshop when you have completed the Motoko backend.
 
-2. Install `podman`:
-
-On Ubuntu/WSL:
-
-```
-sudo apt-get install podman
-```
-
-On Mac:
-
-```
-brew install podman
-```
-
-## Rust
+## Rust (Optional)
 
 1. Replace the `dfx.json` file:
 
@@ -140,24 +131,34 @@ brew install llvm
 
 The backend source code is in `src/rust_backend`.
 
-# Testing the Installation
+## Typescript (Optional)
 
-You can run the application locally with **dfx**:
+1. Replace the `dfx.json` file:
 
-In the folder `auction` (of the local repository folder):
 ```
-dfx start --clean --background
-npm run setup
-npm start
+cp dfx_typescript.json dfx.json
 ```
 
-A local web frontend runs at: http://localhost:3000/
+2. Replace the `package.json` file:
 
-The application is not yet fully functional as the backend is not yet implemented. This is the focus of the workshop.
-
-After testing, you can terminate the **npm** process and then stop **dfx**:
 ```
-dfx stop
+cp package_typescript.json package.json
+```
+
+The backend source code is in `src/typescript_backend`.
+
+3. Install `podman`:
+
+On Ubuntu/WSL:
+
+```
+sudo apt-get install podman
+```
+
+On Mac:
+
+```
+brew install podman
 ```
 
 ### Further Information
@@ -165,5 +166,6 @@ dfx stop
 * [IC Installation Instructions](https://internetcomputer.org/docs/current/developer-docs/setup/install)
 * [More detailed WSL 2 instructions](https://learn.microsoft.com/en-us/windows/wsl/install)
 * [Motoko Documentation](https://internetcomputer.org/docs/current/motoko/main/motoko)
+* [Motoko New Base Library](https://dfinity.github.io/new-motoko-base/)
 * [TypeScript Development Kit for IC (Azle)](https://internetcomputer.org/docs/current/developer-docs/backend/typescript)
 * [Rust Development Kit for IC](https://internetcomputer.org/docs/current/developer-docs/backend/rust)

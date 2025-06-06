@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "setup": "npm ci && dfx canister create backend && dfx generate backend && dfx deploy",
+    "frontend": "vite --port 3000",
+    "backend": "",
+    "build": "tsc && vite build",
     "start": "run-p frontend backend"
   },
   "dependencies": {
@@ -27,5 +30,8 @@
     "sass": "^1.87.0",
     "typescript": "^5.8.3",
     "vite": "^6.3.5"
-  }
+  },
+  "workspaces": [
+    "src/typescript_backend"
+  ]
 }

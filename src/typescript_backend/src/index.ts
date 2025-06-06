@@ -1,86 +1,122 @@
-import { ic, init, Canister, Record, Vec, Void, Principal, update, text, blob, nat } from 'azle';
+// NOTE: Canister upgrades are not supported in this solution.
+// This would require the use of stable data structures, see the Azle documentation.
+// Moreover, the auction timer would need to be re-installed after an upgrade.
 
-export const Item = Record({
-    description: text,
-    image: blob,
-    title: text
+import { msgCaller, trap, IDL, call, update, Principal, time as icpTime } from 'azle';
+
+export type AuctionId = bigint;
+
+export interface Item {
+  description: string,
+  image: Uint8Array,
+  title: string
+};
+
+export const idlItem = IDL.Record({
+  description: IDL.Text,
+  image: IDL.Vec(IDL.Nat8),
+  title: IDL.Text,
 });
 
-export type Item = typeof Item.tsType;
+export interface Bid {
+  originator: Principal,
+  price: bigint,
+  time: bigint,
+};
 
-export const Bid = Record({
-    originator: Principal,
-    price: nat,
-    time: nat
+export const idlBid = IDL.Record({
+  originator: IDL.Principal,
+  price: IDL.Nat,
+  time: IDL.Nat
 });
 
-export type Bid = typeof Bid.tsType;
-
-export const AuctionOverview = Record({
-    id: nat, //AuctionId,
-    item: Item
-});
-
-export type AuctionOverview = typeof AuctionOverview.tsType;
-
-export const AuctionDetails = Record({
-    bidHistory: Vec(Bid),
-    item: Item,
-    remainingTime: nat
-});
-
-export type AuctionDetails = typeof AuctionDetails.tsType;
-
-interface Auction {
-    id: AuctionId;
-    item: Item;
-    bidHistory: Bid[];
-    remainingTime: bigint;
+export interface AuctionOverview {
+  id: bigint,
+  item: Item,
 }
 
-type AuctionId = bigint;
+export const idlAuctionOverview = IDL.Record({
+  id: IDL.Nat,
+  item: idlItem,
+});
 
-export default Canister({
-    /// Install a recurring timer on initialization, closing the expired auctions.
-    init: init([], () => {
-        // TODO: Implementation
-    }),
+export interface AuctionDetails {
+  bidHistory: Bid[],
+  item: Item,
+  remainingTime: bigint,
+}
 
-    // Re-install the auction timer on upgrade.
-    postUpgrade: postUpgrade([], () => {
-        // TODO: Implementation
-    }),
+export const idlAuctionDetails = IDL.Record({
+  bidHistory: IDL.Vec(idlBid),
+  item: idlItem,
+  remainingTime: IDL.Nat,
+});
 
-    // Retrieve the detail information of auction by its id.
-    // The returned detail contain status about whether the auction is active or closed,
-    // and the bids made so far.
-    getAuctionDetails: update([nat], AuctionDetails, (auctionId) => {
-        // TODO: Implementation
-        ic.trap("not yet implemented");
-    }),
+export interface Auction {
+  id: AuctionId;
+  item: Item;
+  bidHistory: Bid[];
+  closingTime: bigint;
+}
 
-    // Retrieve all auctions (open and closed) with their ids and reduced overview information.
-    // Specific auctions can be separately retrieved by `getAuctionDetail`.
-    getOverviewList: update([], Vec(AuctionOverview), () => {
-        // TODO: Implementation
-        ic.trap("not yet implemented");
-    }),
+let auctions: Auction[] = [];
+let idCounter = 0n;
 
-    // Make a new bid for a specific auction specified by the id.
-    // Checks that:
-    // * The user (`ic.caller()`) is authenticated.
-    // * The price is valid, higher than the last bid, if existing.
-    // * The auction is still open (not finished).
-    // If valid, the bid is appended to the bid history.
-    // Otherwise, traps with an error.
-    makeBid: update([nat/*AuctionId*/, nat], Void, (auctionId, price) => {
-        // TODO: Implementation
-        ic.trap("not yet implemented");
-    }),
+const MANAGEMENT_CANISTER_ID = 'aaaaa-aa';
+    
+async function newAuctionId(): Promise<AuctionId> {
+  return idCounter++;
+}
 
-    // Register a new auction that is open for the defined duration.
-    newAuction: update([Item, nat], Void, (item, duration) => {
-        // TODO: Implementation
-        ic.trap("not yet implemented");
-    })
-})
+function findAuction(auctionId: AuctionId): Auction {
+  const result = auctions.find(auction => auction.id === auctionId);
+  if (!result) {
+    trap("Inexistent id");
+  }
+  return result!;
+}
+
+const NANO_SECONFS_PER_SECOND = 1_000_000_000n;
+
+export default class {
+  // Retrieve the detail information of auction by its id.
+  // The returned detail contain status about whether the auction is active or closed,
+  // and the bids made so far.
+  @update([IDL.Nat], idlAuctionDetails)
+  getAuctionDetails(auctionId: bigint): AuctionDetails {
+    // TODO: Implement
+    throw new Error('not yet implemented');
+  }
+
+  // Retrieve all auctions (open and closed) with their ids and reduced overview information.
+  // Specific auctions can be separately retrieved by `getAuctionDetail`.
+  @update([], IDL.Vec(idlAuctionOverview))
+  getOverviewList(): AuctionOverview[] {
+    // TODO: Implement
+    throw new Error('not yet implemented');
+  }
+
+  // Make a new bid for a specific auction specified by the id.
+  // Checks that:
+  // * The user (`ic.caller()`) is authenticated.
+  // * The price is valid, higher than the last bid, if existing.
+  // * The auction is still open (not finished).
+  // If valid, the bid is appended to the bid history.
+  // Otherwise, traps with an error.
+  @update([IDL.Nat, IDL.Nat])
+  makeBid(auctionId: bigint, price: bigint): void {
+    // TODO: Implement
+    throw new Error('not yet implemented');
+  }
+
+  // Register a new auction that is open for the defined duration.
+  @update([idlItem, IDL.Nat])
+  async newAuction(item: Item, duration: bigint): Promise<void> {
+    const id = await newAuctionId();
+    const bidHistory: Bid[] = [];
+    const startTime = icpTime();
+    const closingTime = startTime + duration * NANO_SECONFS_PER_SECOND;
+    const newAuction = { id, item, bidHistory, closingTime };
+    auctions.unshift(newAuction);
+  }
+}

@@ -1,13 +1,13 @@
-import Principal "mo:new-base/Principal";
-import Map "mo:new-base/Map";
-import Iter "mo:new-base/Iter";
-import List "mo:new-base/List";
-import Nat "mo:new-base/Nat";
-import Nat64 "mo:new-base/Nat64";
-import Int "mo:new-base/Int";
-import Time "mo:new-base/Time";
-import Runtime "mo:new-base/Runtime";
-import Random "mo:new-base/Random";
+import Principal "mo:base/Principal";
+import Map "mo:base/Map";
+import Iter "mo:base/Iter";
+import List "mo:base/List";
+import Nat "mo:base/Nat";
+import Nat64 "mo:base/Nat64";
+import Int "mo:base/Int";
+import Time "mo:base/Time";
+import Runtime "mo:base/Runtime";
+import Random "mo:base/Random";
 
 /// Backend server actor for the auction platform
 persistent actor {
@@ -25,8 +25,8 @@ persistent actor {
   type Bid = {
     /// Price in the unit of the currency (ICP).
     price : Nat;
-    /// Point in time of the bid, measured in seconds back
-    /// from the closing of the auction.
+    /// Point in time of the bid, measured as the
+    /// remaining seconds until the closing of the auction.
     time : Nat;
     /// Authenticated user id of this bid.
     originator : Principal.Principal;
@@ -58,10 +58,36 @@ persistent actor {
     remainingTime : Nat;
   };
 
-  /// Register a new auction that is open for the defined duration.
+  /// Internal, non-shared type, storing all information
+  /// about an auction. Using a separate type than `AuctionDetails`
+  /// to enable simpler and faster extension of the bid history
+  /// by means of a `List`.
+  type Auction = {
+    id : AuctionId;
+    item : Item;
+    bidHistory : List.List<Bid>;
+    closingTime : Time.Time;
+  };
+
+  /// Map auction id to auctions.
+  let auctions = Map.empty<AuctionId, Auction>();
+
+  var idCounter = 0;
+
+  /// Internal function for generating a new auction id by using the `idCounter`.
+  func newAuctionId() : async* AuctionId {
+    idCounter += 1;
+    return idCounter;
+  };
+
+  /// Register a new auction that is open for the defined duration in seconds.
   public func newAuction(item : Item, duration : Nat) : async () {
-    // TODO: Implementation
-    Runtime.trap("not yet implemented");
+    let id = await* newAuctionId();
+    let bidHistory = List.empty<Bid>();
+    let startTime = Time.now();
+    let closingTime = startTime + Time.toNanoseconds(#seconds(duration));
+    let newAuction = { id; item; bidHistory; closingTime };
+    Map.add(auctions, Nat.compare, id, newAuction);
   };
 
   /// Retrieve all auctions (open and closed) with their ids and reduced overview information.
@@ -88,8 +114,10 @@ persistent actor {
   /// Make a new bid for a specific auction specified by the id.
   /// Checks that:
   /// * The user (`message.caller`) is authenticated.
+  ///   - You can use `Principal.isAnonymous` for this.
   /// * The price is valid, higher than the last bid, if existing.
   /// * The auction is still open (not finished).
+  ///   - Check current time (`Time.now()`) against auction closing time.
   /// If valid, the bid is appended to the bid history.
   /// Otherwise, traps with an error.
   public shared (message) func makeBid(auctionId : AuctionId, price : Nat) : async () {
